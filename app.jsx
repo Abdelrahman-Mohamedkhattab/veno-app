@@ -282,10 +282,40 @@ const MOODS = [
   { id: "stressed", label: "Stressed", emojiPath: "stressed", message: "Thanks for telling me. I moved the hardest topic to tomorrow — today's just a gentle review." },
 ];
 
+const FEATURES = [
+  { title: "Personalized daily plan", body: "Every session is built around what feels hardest, what's due soonest, and what you're forgetting fastest.", icon: IconCalendar },
+  { title: "Adaptive practice questions", body: "Glow pulls questions straight from your own lecture slides and notes — not a generic question bank.", icon: IconBook },
+  { title: "Mastery tracking", body: "See trendlines per topic, not just a single score, so you always know if you're improving or slipping.", icon: IconChart },
+  { title: "Wellbeing check-ins", body: "Tell Glow how you're feeling and today's plan adjusts automatically — lighter when tired, gentler when stressed.", icon: IconUser },
+];
+
+const STEPS = [
+  { title: "Upload your materials", body: "Slides, notes, or recordings for each course." },
+  { title: "Tell us how you study", body: "Your best hours, your realistic hours, and what's competing for your time." },
+  { title: "Get your plan, every day", body: "Short, focused sessions that adapt as your mastery and mood change." },
+];
+
 function courseById(id) { return COURSES.find((c) => c.id === id); }
 function topicById(courseId, topicId) {
   const c = courseById(courseId);
   return c ? c.topics.find((t) => t.id === topicId) : null;
+}
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 900px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 900px)");
+    const handler = (e) => setIsDesktop(e.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
+  return isDesktop;
 }
 
 /* =========================================================================
@@ -340,11 +370,13 @@ function RingProgress({ value, size = 64, stroke = 8, color = "var(--blue)", tra
   );
 }
 
-function TopBar({ streak, onAvatar, title }) {
+function TopBar({ streak, onAvatar, title, isDesktop }) {
   return (
     <div className="topbar">
       {title ? (
         <h3 className="section-title">{title}</h3>
+      ) : isDesktop ? (
+        <div />
       ) : (
         <Logo height={28} color="var(--navy)" oval="var(--navy)" face="var(--white)" />
       )}
@@ -631,13 +663,13 @@ function Prioritization({ onDone }) {
 /* =========================================================================
    HOME / DASHBOARD
    ========================================================================= */
-function Home({ user, streak, plan, moodState, onOpenWellbeing, onStartSession, onOpenCourse, onOpenProfile }) {
+function Home({ user, streak, plan, moodState, isDesktop, onOpenWellbeing, onStartSession, onOpenCourse, onOpenProfile }) {
   const overall = Math.round(COURSES.reduce((a, c) => a + c.progress, 0) / COURSES.length);
   const mood = MOODS.find((m) => m.id === moodState);
 
   return (
     <>
-      <TopBar streak={streak} onAvatar={onOpenProfile} />
+      <TopBar streak={streak} onAvatar={onOpenProfile} isDesktop={isDesktop} />
       <div className="scroll px" style={{ paddingBottom: 18 }}>
         <div style={{ marginTop: 4 }}>
           <h1 style={{ fontSize: 24 }}>Hey {user.name} {"\u{1F44B}"}</h1>
@@ -665,7 +697,7 @@ function Home({ user, streak, plan, moodState, onOpenWellbeing, onStartSession, 
           <h3 className="section-title" style={{ fontSize: 17 }}>Today's plan</h3>
           <span className="chip">{plan.reduce((a, p) => a + p.minutes, 0)} min total</span>
         </div>
-        <div className="stack" style={{ gap: 10, marginTop: 12 }}>
+        <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12 }}>
           {plan.map((item, i) => {
             const c = courseById(item.courseId);
             const t = topicById(item.courseId, item.topicId);
@@ -692,7 +724,7 @@ function Home({ user, streak, plan, moodState, onOpenWellbeing, onStartSession, 
           <h3 className="section-title" style={{ fontSize: 17 }}>Your courses</h3>
           <span className="chip good">{overall}% overall</span>
         </div>
-        <div className="stack" style={{ gap: 10, marginTop: 12, marginBottom: 6 }}>
+        <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12, marginBottom: 6 }}>
           {COURSES.map((c) => (
             <button key={c.id} className="card fade-item row between" style={{ padding: 14, width: "100%", textAlign: "left" }} onClick={() => onOpenCourse(c.id)}>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -850,7 +882,7 @@ function StudySession({ courseId, topicId, onExit, onComplete }) {
 /* =========================================================================
    PROGRESS / MASTERY
    ========================================================================= */
-function ProgressView({ streak, onOpenProfile, onStartSession }) {
+function ProgressView({ streak, isDesktop, onOpenProfile, onStartSession }) {
   const [courseFilter, setCourseFilter] = useState("all");
   const allTopics = COURSES.flatMap((c) => c.topics.map((t) => ({ ...t, courseId: c.id, courseName: c.name, color: c.color })));
   const shown = courseFilter === "all" ? allTopics : allTopics.filter((t) => t.courseId === courseFilter);
@@ -875,7 +907,7 @@ function ProgressView({ streak, onOpenProfile, onStartSession }) {
           ))}
         </div>
 
-        <div className="stack" style={{ gap: 10, marginTop: 16, marginBottom: 10 }}>
+        <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 16, marginBottom: 10 }}>
           {shown.map((t) => {
             const rising = t.trend[t.trend.length - 1] >= t.trend[0];
             return (
@@ -1075,7 +1107,7 @@ function Pricing({ onBack, currentPlan, onSubscribe }) {
 /* =========================================================================
    PROFILE / SETTINGS
    ========================================================================= */
-function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnected, notifs, onToggleNotif, pacing, onSetPacing, onRestart }) {
+function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnected, notifs, onToggleNotif, pacing, onSetPacing, onRestart, onExitToLanding }) {
   return (
     <>
       <ScreenHeader onBack={onBack} title="Profile" />
@@ -1148,8 +1180,11 @@ function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnect
           </div>
         </div>
 
-        <button className="btn btn-outline btn-block" style={{ marginTop: 26, marginBottom: 30 }} onClick={onRestart}>
+        <button className="btn btn-outline btn-block" style={{ marginTop: 26 }} onClick={onRestart}>
           Restart onboarding demo
+        </button>
+        <button className="btn btn-ghost btn-block" style={{ marginTop: 10, marginBottom: 30 }} onClick={onExitToLanding}>
+          Back to homepage
         </button>
       </div>
     </>
@@ -1170,6 +1205,120 @@ function Toggle({ on, onClick }) {
         background: "#fff", transition: "left .15s ease", boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
       }} />
     </button>
+  );
+}
+
+/* =========================================================================
+   LANDING / MARKETING SITE
+   ========================================================================= */
+function Landing({ onGetStarted, onPreview }) {
+  return (
+    <div className="site">
+      <header className="site-header">
+        <Logo height={28} color="#fff" oval="#fff" face="var(--navy-deep)" />
+        <nav className="site-nav">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <div className="row" style={{ gap: 10 }}>
+          <button className="btn btn-ghost btn-sm" onClick={onPreview}>View demo</button>
+          <button className="btn btn-gold btn-sm" onClick={onGetStarted}>Get started</button>
+        </div>
+      </header>
+
+      <section className="hero">
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <span className="chip gold"><IconSpark /> AI-personalized studying</span>
+            <h1>Study smarter, not longer — with Glow by your side.</h1>
+            <p>Veno turns your lecture slides and notes into a personalized daily study plan, adaptive practice questions, and a mastery tracker that actually tells you where you stand.</p>
+            <div className="hero-ctas">
+              <button className="btn btn-gold" onClick={onGetStarted}>Get started free <IconChevron /></button>
+              <button className="btn btn-outline" style={{ borderColor: "rgba(255,255,255,0.35)", color: "#fff" }} onClick={onPreview}>Explore the dashboard</button>
+            </div>
+            <div className="row wrap hero-stats" style={{ gap: 32 }}>
+              <div><div className="stat-num">4</div><div className="stat-label">Courses tracked</div></div>
+              <div><div className="stat-num">10</div><div className="stat-label">Guided screens</div></div>
+              <div><div className="stat-num">100%</div><div className="stat-label">Personalized plan</div></div>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="phone-preview">
+              <div className="row between" style={{ padding: "18px 18px 0" }}>
+                <Logo height={18} color="var(--navy)" oval="var(--navy)" face="#fff" />
+                <div className="streak-pill"><IconCoin /> 120</div>
+              </div>
+              <div style={{ padding: 18 }}>
+                <Glow size={50} />
+                <h3 style={{ marginTop: 10, fontSize: 18 }}>Hey Ahmed {"\u{1F44B}"}</h3>
+                <p className="section-sub" style={{ marginTop: 4 }}>Today's plan is ready.</p>
+                <div className="card" style={{ marginTop: 14, padding: 12 }}>
+                  <div className="row between">
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>Graph Traversal</span>
+                    <span className="chip"><IconClock />12m</span>
+                  </div>
+                </div>
+                <div className="card" style={{ marginTop: 10, padding: 12 }}>
+                  <div className="row between">
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>Infinite Series</span>
+                    <span className="chip"><IconClock />10m</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="features" id="features">
+        <h2 className="section-title" style={{ fontSize: 30, textAlign: "center" }}>Everything a study platform should do</h2>
+        <p className="section-sub" style={{ textAlign: "center", marginTop: 8 }}>One place for your materials, your plan, and your progress.</p>
+        <div className="features-grid">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="feature-card">
+              <div className="feature-icon"><f.icon /></div>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="how" id="how">
+        <h2 className="section-title" style={{ fontSize: 30, textAlign: "center" }}>How Veno works</h2>
+        <div className="how-steps">
+          {STEPS.map((s, i) => (
+            <div key={i} className="how-step">
+              <div className="how-num">{i + 1}</div>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="pricing-section" id="pricing">
+        <h2 className="section-title" style={{ fontSize: 30, textAlign: "center" }}>Simple pricing</h2>
+        <p className="section-sub" style={{ textAlign: "center", marginTop: 8 }}>Most students study one semester at a time.</p>
+        <div className="pricing-grid">
+          {PLANS.map((p) => (
+            <div key={p.id} className="card pricing-card">
+              {p.recommended && <span className="chip gold">MOST POPULAR</span>}
+              <div className="pricing-name">{p.name}</div>
+              <div className="pricing-price">EGP {p.price}<span>{p.cadence}</span></div>
+              <div className="section-sub" style={{ marginTop: 8 }}>{p.note}</div>
+              <button className="btn btn-primary btn-block" style={{ marginTop: 18 }} onClick={onGetStarted}>Get started</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <footer className="site-footer">
+        <Logo height={22} color="#fff" oval="#fff" face="var(--navy-deep)" />
+        <p>© {new Date().getFullYear()} Veno. Built for students, by design.</p>
+      </footer>
+    </div>
   );
 }
 
@@ -1229,7 +1378,40 @@ function StudyPicker({ streak, onOpenProfile, onStartSession }) {
   );
 }
 
+function DesktopShell({ tab, onNav, streak, user, children }) {
+  return (
+    <div className="app-shell">
+      <aside className="app-sidebar">
+        <div style={{ paddingLeft: 6 }}>
+          <Logo height={26} color="#fff" oval="#fff" face="var(--navy-deep)" />
+        </div>
+        <nav className="side-nav">
+          {TABS.map((t) => (
+            <button key={t.id} className={"side-link" + (tab === t.id ? " active" : "")} onClick={() => onNav(t.id)}>
+              <t.icon />
+              {t.label}
+            </button>
+          ))}
+        </nav>
+        <div className="side-footer">
+          <div className="streak-pill" style={{ background: "rgba(255,255,255,0.08)", color: "#fff" }}>
+            <IconCoin /> {streak}
+          </div>
+          <button className="side-link" style={{ padding: "8px 10px" }} onClick={() => onNav("profile")}>
+            <div className="avatar-btn" style={{ width: 28, height: 28, fontSize: 12, flexShrink: 0 }}>{user.name[0]}</div>
+            {user.name}
+          </button>
+        </div>
+      </aside>
+      <main className="app-main">
+        <div className="app-main-inner">{children}</div>
+      </main>
+    </div>
+  );
+}
+
 function App() {
+  const [view, setView] = useState("landing");
   const [stage, setStage] = useState("onboarding");
   const [tab, setTab] = useState("home");
   const [user, setUser] = useState({ name: "Ahmed" });
@@ -1245,6 +1427,7 @@ function App() {
   const [connected, setConnected] = useState({});
   const [notifs, setNotifs] = useState({ reminders: true, wellbeing: true, summary: false });
   const [pacing, setPacing] = useState("Balanced");
+  const isDesktop = useIsDesktop();
 
   function finishOnboarding(data) {
     setUser({ name: data.name });
@@ -1284,71 +1467,93 @@ function App() {
     setPlan(computePlan(null, null));
   }
 
+  function enterApp() { setView("app"); }
+  function previewDashboard() { setView("app"); setStage("app"); }
+  function backToLanding() { setView("landing"); setStage("onboarding"); setTab("home"); }
+
+  function navigate(tabId) {
+    setActiveSession(null);
+    setShowPricing(false);
+    setTab(tabId);
+  }
+
+  if (view === "landing") {
+    return <Landing onGetStarted={enterApp} onPreview={previewDashboard} />;
+  }
+
   if (stage === "onboarding") return <PhoneFrame><Onboarding onDone={finishOnboarding} onSkip={skipToApp} /></PhoneFrame>;
   if (stage === "uploads") return <PhoneFrame><UploadMaterials onDone={finishUploads} onSkip={finishUploads} /></PhoneFrame>;
   if (stage === "prioritize") return <PhoneFrame><Prioritization onDone={finishPrioritize} /></PhoneFrame>;
 
+  let content;
   if (activeSession) {
-    return (
-      <PhoneFrame>
-        <StudySession
-          courseId={activeSession.courseId}
-          topicId={activeSession.topicId}
-          onExit={() => setActiveSession(null)}
-          onComplete={handleSessionComplete}
-        />
-      </PhoneFrame>
+    content = (
+      <StudySession
+        courseId={activeSession.courseId}
+        topicId={activeSession.topicId}
+        onExit={() => setActiveSession(null)}
+        onComplete={handleSessionComplete}
+      />
+    );
+  } else if (showPricing) {
+    content = <Pricing onBack={() => setShowPricing(false)} currentPlan={subscription} onSubscribe={setSubscription} />;
+  } else {
+    content = (
+      <div className="screen">
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+          {tab === "home" && (
+            <Home
+              user={user} streak={coins} plan={plan} moodState={moodState} isDesktop={isDesktop}
+              onOpenWellbeing={() => setShowWellbeing(true)}
+              onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })}
+              onOpenCourse={() => navigate("progress")}
+              onOpenProfile={() => navigate("profile")}
+            />
+          )}
+          {tab === "study" && (
+            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
+          )}
+          {tab === "progress" && (
+            <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
+          )}
+          {tab === "schedule" && (
+            <Schedule streak={coins} onOpenProfile={() => navigate("profile")} sessions={sessions} onReschedule={handleReschedule} />
+          )}
+          {tab === "profile" && (
+            <Profile
+              user={user} onBack={() => navigate("home")} plan={subscription} onOpenPricing={() => setShowPricing(true)}
+              connected={connected} onToggleConnected={(id) => setConnected((c) => ({ ...c, [id]: c[id] === false ? true : false }))}
+              notifs={notifs} onToggleNotif={(k) => setNotifs((n) => ({ ...n, [k]: !n[k] }))}
+              pacing={pacing} onSetPacing={setPacing} onRestart={restartDemo} onExitToLanding={backToLanding}
+            />
+          )}
+        </div>
+        {!isDesktop && (
+          <div className="tabbar">
+            {TABS.map((t) => (
+              <button key={t.id} className={"tab" + (tab === t.id ? " active" : "")} onClick={() => navigate(t.id)}>
+                <t.icon />
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     );
   }
 
-  if (showPricing) {
+  if (isDesktop) {
     return (
-      <PhoneFrame>
-        <Pricing onBack={() => setShowPricing(false)} currentPlan={subscription} onSubscribe={setSubscription} />
-      </PhoneFrame>
+      <DesktopShell tab={tab} onNav={navigate} streak={coins} user={user}>
+        {content}
+        {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} />}
+      </DesktopShell>
     );
   }
 
   return (
     <PhoneFrame>
-      <div className="screen">
-        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-          {tab === "home" && (
-            <Home
-              user={user} streak={coins} plan={plan} moodState={moodState}
-              onOpenWellbeing={() => setShowWellbeing(true)}
-              onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })}
-              onOpenCourse={() => setTab("progress")}
-              onOpenProfile={() => setTab("profile")}
-            />
-          )}
-          {tab === "study" && (
-            <StudyPicker streak={coins} onOpenProfile={() => setTab("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
-          )}
-          {tab === "progress" && (
-            <ProgressView streak={coins} onOpenProfile={() => setTab("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
-          )}
-          {tab === "schedule" && (
-            <Schedule streak={coins} onOpenProfile={() => setTab("profile")} sessions={sessions} onReschedule={handleReschedule} />
-          )}
-          {tab === "profile" && (
-            <Profile
-              user={user} onBack={() => setTab("home")} plan={subscription} onOpenPricing={() => setShowPricing(true)}
-              connected={connected} onToggleConnected={(id) => setConnected((c) => ({ ...c, [id]: c[id] === false ? true : false }))}
-              notifs={notifs} onToggleNotif={(k) => setNotifs((n) => ({ ...n, [k]: !n[k] }))}
-              pacing={pacing} onSetPacing={setPacing} onRestart={restartDemo}
-            />
-          )}
-        </div>
-        <div className="tabbar">
-          {TABS.map((t) => (
-            <button key={t.id} className={"tab" + (tab === t.id ? " active" : "")} onClick={() => setTab(t.id)}>
-              <t.icon />
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {content}
       {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} />}
     </PhoneFrame>
   );
