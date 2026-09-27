@@ -1481,9 +1481,9 @@ function App() {
     return <Landing onGetStarted={enterApp} onPreview={previewDashboard} />;
   }
 
-  if (stage === "onboarding") return <PhoneFrame><Onboarding onDone={finishOnboarding} onSkip={skipToApp} /></PhoneFrame>;
-  if (stage === "uploads") return <PhoneFrame><UploadMaterials onDone={finishUploads} onSkip={finishUploads} /></PhoneFrame>;
-  if (stage === "prioritize") return <PhoneFrame><Prioritization onDone={finishPrioritize} /></PhoneFrame>;
+  if (stage === "onboarding") return <PhoneFrame isDesktop={isDesktop}><Onboarding onDone={finishOnboarding} onSkip={skipToApp} /></PhoneFrame>;
+  if (stage === "uploads") return <PhoneFrame isDesktop={isDesktop}><UploadMaterials onDone={finishUploads} onSkip={finishUploads} /></PhoneFrame>;
+  if (stage === "prioritize") return <PhoneFrame isDesktop={isDesktop}><Prioritization onDone={finishPrioritize} /></PhoneFrame>;
 
   let content;
   if (activeSession) {
@@ -1559,10 +1559,10 @@ function App() {
   );
 }
 
-function PhoneFrame({ children }) {
+function PhoneFrame({ children, isDesktop }) {
   return (
     <div className="veno-root">
-      <div className="phone">{children}</div>
+      <div className={"phone" + (isDesktop ? " desktop-card" : "")}>{children}</div>
     </div>
   );
 }
