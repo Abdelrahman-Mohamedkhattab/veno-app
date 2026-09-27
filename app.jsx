@@ -303,10 +303,10 @@ function topicById(courseId, topicId) {
 
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(min-width: 900px)").matches
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
   );
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 900px)");
+    const mq = window.matchMedia("(min-width: 768px)");
     const handler = (e) => setIsDesktop(e.matches);
     if (mq.addEventListener) mq.addEventListener("change", handler);
     else mq.addListener(handler);
