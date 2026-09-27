@@ -43,7 +43,7 @@ img{ max-width:100%; }
 
 /* ---------------- App frame (phone-style canvas centered on any host) ---------------- */
 .veno-root{
-  min-height:100%;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:flex-start;
@@ -315,7 +315,7 @@ textarea{ resize:vertical; min-height:84px; }
 /* ============================================================
    MARKETING SITE (landing page)
    ============================================================ */
-.site{ min-height:100%; background:var(--white); }
+.site{ min-height:100vh; background:var(--white); }
 .site-header{
   position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
   padding:16px 6vw; background:rgba(11,27,62,0.92); backdrop-filter:blur(10px);
