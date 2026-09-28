@@ -153,6 +153,34 @@ const IconFile = (p) => (
     <path d="M14 3.5v4h4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
   </svg>
 );
+const IconTrendUp = (p) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M4 17 10 11l4 4 6-8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M15 7h5v5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const IconTrendDown = (p) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M4 7l6 6 4-4 6 8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M15 17h5v-5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+function MoodFace({ mood, size = 26, style }) {
+  const mouths = {
+    great: "M8 15.5c1.4 1.8 3.2 2.7 5 2.7s3.6-.9 5-2.7",
+    okay: "M8 15.5c1.4 1.3 3.2 2 5 2s3.6-.7 5-2",
+    tired: "M8.5 16.5h11",
+    stressed: "M8 17c1.4-1.6 3.2-2.4 5-2.4s3.6.8 5 2.4",
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
+      <circle cx="12" cy="12" r="10.2" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="8.6" cy="10" r="1.15" fill="currentColor" />
+      <circle cx="15.4" cy="10" r="1.15" fill="currentColor" />
+      <path d={mouths[mood] || mouths.okay} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
 
 /* =========================================================================
    MOCK DATA
@@ -198,49 +226,63 @@ const COURSES = [
 const QUESTION_BANK = {
   sorting: [
     { type: "mcq", prompt: "What is the average-case time complexity of Quicksort?", choices: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"], correct: 1,
-      explain: "Quicksort partitions around a pivot; on average the array splits roughly in half each time, giving log n levels of n work each — the same shape as Merge Sort, just without the extra memory." },
+      explain: "Quicksort partitions around a pivot; on average the array splits roughly in half each time, giving log n levels of n work each — the same shape as Merge Sort, just without the extra memory.",
+      source: { file: "Lecture 4 – Sorting.pdf", slide: 6 } },
     { type: "mcq", prompt: "Which sort is stable by default?", choices: ["Quicksort", "Heapsort", "Merge Sort", "Selection Sort"], correct: 2,
-      explain: "Merge Sort never swaps equal elements past each other during the merge step, so items with equal keys keep their original relative order." },
+      explain: "Merge Sort never swaps equal elements past each other during the merge step, so items with equal keys keep their original relative order.",
+      source: { file: "Lecture 4 – Sorting.pdf", slide: 9 } },
     { type: "written", prompt: "In one or two sentences, explain why Bubble Sort is rarely used in practice despite being easy to understand.",
-      explain: "Bubble Sort does O(n²) comparisons even when the array is nearly sorted (unless you add an early-exit check), so it scales badly — real systems use O(n log n) sorts like Merge or Tim Sort instead." },
+      explain: "Bubble Sort does O(n²) comparisons even when the array is nearly sorted (unless you add an early-exit check), so it scales badly — real systems use O(n log n) sorts like Merge or Tim Sort instead.",
+      source: { file: "Recitation notes.docx", slide: 2 } },
   ],
   graphs: [
     { type: "mcq", prompt: "BFS on an unweighted graph finds the shortest path because it explores nodes:", choices: ["In DFS order", "Layer by layer, by distance", "Randomly", "By node ID"], correct: 1,
-      explain: "A queue makes BFS finish all nodes at distance k before starting distance k+1, so the first time it reaches a node is guaranteed to be via a shortest path." },
+      explain: "A queue makes BFS finish all nodes at distance k before starting distance k+1, so the first time it reaches a node is guaranteed to be via a shortest path.",
+      source: { file: "Lecture 4 – Graphs.pdf", slide: 12 } },
     { type: "mcq", prompt: "Which structure does DFS typically use (implicitly or explicitly)?", choices: ["Queue", "Stack", "Heap", "Hash map"], correct: 1,
-      explain: "DFS dives down one path fully before backtracking — that back-and-forth is exactly stack (LIFO) behaviour, whether it's an explicit stack or the recursion call stack." },
+      explain: "DFS dives down one path fully before backtracking — that back-and-forth is exactly stack (LIFO) behaviour, whether it's an explicit stack or the recursion call stack.",
+      source: { file: "Lecture 4 – Graphs.pdf", slide: 15 } },
   ],
   dp: [
     { type: "mcq", prompt: "Dynamic programming is most useful when a problem has:", choices: ["Random substructure", "Overlapping subproblems + optimal substructure", "No recursion", "Only greedy choices"], correct: 1,
-      explain: "If subproblems repeat, caching (memoizing) their answers avoids recomputing them — that's the entire trick behind DP." },
+      explain: "If subproblems repeat, caching (memoizing) their answers avoids recomputing them — that's the entire trick behind DP.",
+      source: { file: "Week 4 slides.pptx", slide: 3 } },
     { type: "written", prompt: "What's the difference between memoization (top-down) and tabulation (bottom-up) DP?",
-      explain: "Memoization is recursion + a cache: you solve subproblems on demand. Tabulation fills a table iteratively from the smallest subproblems up, avoiding recursion overhead entirely." },
+      explain: "Memoization is recursion + a cache: you solve subproblems on demand. Tabulation fills a table iteratively from the smallest subproblems up, avoiding recursion overhead entirely.",
+      source: { file: "Week 4 slides.pptx", slide: 7 } },
   ],
   integrals: [
     { type: "mcq", prompt: "Integration by parts is derived from which rule?", choices: ["Chain rule", "Product rule", "Quotient rule", "Power rule"], correct: 1,
-      explain: "∫ u dv = uv − ∫ v du falls directly out of reversing the product rule for derivatives." },
+      explain: "∫ u dv = uv − ∫ v du falls directly out of reversing the product rule for derivatives.",
+      source: { file: "Series convergence slides.pdf", slide: 2 } },
     { type: "mcq", prompt: "Which substitution helps most with ∫ 1/(1+x²) dx?", choices: ["x = sinθ", "x = tanθ", "x = secθ", "No substitution needed"], correct: 3,
-      explain: "That integral is the direct antiderivative of arctan(x) — recognizing the standard form saves a substitution entirely." },
+      explain: "That integral is the direct antiderivative of arctan(x) — recognizing the standard form saves a substitution entirely.",
+      source: { file: "Series convergence slides.pdf", slide: 5 } },
   ],
   series: [
     { type: "mcq", prompt: "A series where the ratio test gives r = 1 is:", choices: ["Always convergent", "Always divergent", "Inconclusive", "Always zero"], correct: 2,
-      explain: "r = 1 is exactly the boundary case the ratio test can't resolve — you need another test (like comparison or integral test) to decide." },
+      explain: "r = 1 is exactly the boundary case the ratio test can't resolve — you need another test (like comparison or integral test) to decide.",
+      source: { file: "Series convergence slides.pdf", slide: 11 } },
   ],
   em: [
     { type: "mcq", prompt: "Gauss's Law relates electric flux through a closed surface to:", choices: ["Enclosed charge", "Total charge in the universe", "Surface area only", "Magnetic field"], correct: 0,
-      explain: "Φ = Q_enclosed / ε₀ — only charge inside the surface matters, which is what makes symmetric problems solvable by inspection." },
+      explain: "Φ = Q_enclosed / ε₀ — only charge inside the surface matters, which is what makes symmetric problems solvable by inspection.",
+      source: { file: "Chapter scan.pdf", slide: 4 } },
   ],
   thermo: [
     { type: "mcq", prompt: "In an adiabatic process:", choices: ["No work is done", "No heat is exchanged", "Temperature is constant", "Pressure is constant"], correct: 1,
-      explain: "Adiabatic literally means 'no heat transfer' (Q = 0) — all internal energy change comes from work done on or by the gas." },
+      explain: "Adiabatic literally means 'no heat transfer' (Q = 0) — all internal energy change comes from work done on or by the gas.",
+      source: { file: "Chapter scan.pdf", slide: 8 } },
   ],
   essay: [
     { type: "written", prompt: "Write a one-sentence thesis statement arguing for or against remote learning for university students.",
-      explain: "A strong thesis takes a clear side and previews your reasoning, e.g. 'Remote learning benefits students most when paired with structured weekly deadlines, because flexibility without structure tends to reduce follow-through.'" },
+      explain: "A strong thesis takes a clear side and previews your reasoning, e.g. 'Remote learning benefits students most when paired with structured weekly deadlines, because flexibility without structure tends to reduce follow-through.'",
+      source: { file: "Essay rubric.pdf", slide: 1 } },
   ],
   vocab: [
     { type: "mcq", prompt: "Which word best fits: 'The study's findings were later ___ by a larger trial.'", choices: ["corroborated", "confused", "canceled", "copied"], correct: 0,
-      explain: "'Corroborated' means confirmed by additional evidence — the common academic phrasing for one study supporting another's results." },
+      explain: "'Corroborated' means confirmed by additional evidence — the common academic phrasing for one study supporting another's results.",
+      source: { file: "Essay rubric.pdf", slide: 3 } },
   ],
 };
 
@@ -270,16 +312,19 @@ const INITIAL_SCHEDULE = [
 ];
 
 const PLANS = [
-  { id: "monthly", name: "Monthly", price: 249, cadence: "/ month", note: "Billed every month", recommended: false },
-  { id: "semester", name: "Per Semester", price: 179, cadence: "/ month", note: "Billed once per semester — save 28%", recommended: true },
-  { id: "annual", name: "Annual", price: 149, cadence: "/ month", note: "Billed yearly — best value", recommended: false },
+  { id: "monthly", name: "Monthly", price: 249, cadence: "/ month", note: "Billed every month", recommended: false,
+    features: ["Unlimited AI-generated questions", "Upload unlimited materials"] },
+  { id: "semester", name: "Per Semester", price: 179, cadence: "/ month", note: "Billed once per semester — save 28%", recommended: true,
+    features: ["Everything in Monthly", "Matches your actual term — no gaps", "Save 28% vs. monthly"] },
+  { id: "annual", name: "Annual", price: 149, cadence: "/ month", note: "Billed yearly — best value", recommended: false,
+    features: ["Everything in Per Semester", "Best per-month value"] },
 ];
 
 const MOODS = [
-  { id: "great", label: "Great", emojiPath: "great", message: "Love it — let's keep today's full plan, maybe even add a bonus round." },
-  { id: "okay", label: "Okay", emojiPath: "okay", message: "Sounds good. Today's plan stays as is — steady and manageable." },
-  { id: "tired", label: "Tired", emojiPath: "tired", message: "Got it — I trimmed today's session to the essentials so it feels lighter." },
-  { id: "stressed", label: "Stressed", emojiPath: "stressed", message: "Thanks for telling me. I moved the hardest topic to tomorrow — today's just a gentle review." },
+  { id: "great", label: "Great", message: "Love it — let's keep today's full plan, maybe even add a bonus round." },
+  { id: "okay", label: "Okay", message: "Sounds good. Today's plan stays as is — steady and manageable." },
+  { id: "tired", label: "Tired", message: "Got it — I trimmed today's session to the essentials so it feels lighter." },
+  { id: "stressed", label: "Overwhelmed", message: "Thanks for telling me. I moved the hardest topic to tomorrow — today's just a gentle review." },
 ];
 
 const FEATURES = [
@@ -299,6 +344,15 @@ function courseById(id) { return COURSES.find((c) => c.id === id); }
 function topicById(courseId, topicId) {
   const c = courseById(courseId);
   return c ? c.topics.find((t) => t.id === topicId) : null;
+}
+
+function courseTrend(course) {
+  const len = course.topics[0].trend.length;
+  return Array.from({ length: len }, (_, i) => Math.round(course.topics.reduce((a, t) => a + t.trend[i], 0) / course.topics.length));
+}
+function courseRising(course) {
+  const trend = courseTrend(course);
+  return trend[trend.length - 1] >= trend[0];
 }
 
 function useIsDesktop() {
@@ -455,9 +509,14 @@ function Onboarding({ onDone, onSkip }) {
       <div className="scroll px" style={{ paddingTop: 26 }}>
         {step === 0 && (
           <div className="fade-item">
-            <Glow size={92} />
-            <h1 style={{ fontSize: 27, marginTop: 18, lineHeight: 1.15 }}>Hi, I'm Glow —<br />what should I call you?</h1>
-            <p className="section-sub" style={{ marginTop: 8 }}>I'll use this to personalize your study plan.</p>
+            <div className="row" style={{ gap: 12, alignItems: "flex-start" }}>
+              <div className="chat-avatar"><Glow size={30} /></div>
+              <div className="card chat-bubble">
+                <h1 style={{ fontSize: 22, lineHeight: 1.2 }}>Hi, I'm Glow — what should I call you?</h1>
+                <p className="section-sub" style={{ marginTop: 6 }}>I'll use this to personalize your study plan.</p>
+                <div className="ar-hint">يلا نتعرف على أسلوبك في المذاكرة</div>
+              </div>
+            </div>
             <div style={{ marginTop: 22 }}>
               <input type="text" placeholder="Your first name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
             </div>
@@ -468,6 +527,7 @@ function Onboarding({ onDone, onSkip }) {
           <div className="fade-item">
             <h1 style={{ fontSize: 24, lineHeight: 1.2 }}>When do you usually study best?</h1>
             <p className="section-sub" style={{ marginTop: 8 }}>We'll suggest sessions around this window.</p>
+            <div className="ar-hint">إمتى بتركز أكتر؟</div>
             <div className="stack" style={{ gap: 10, marginTop: 22 }}>
               {STUDY_TIMES.map((opt) => (
                 <button key={opt} className={"choice" + (studyTime === opt ? " selected" : "")} onClick={() => setStudyTime(opt)}>
@@ -498,6 +558,7 @@ function Onboarding({ onDone, onSkip }) {
           <div className="fade-item">
             <h1 style={{ fontSize: 24, lineHeight: 1.2 }}>Anything else going on we should know?</h1>
             <p className="section-sub" style={{ marginTop: 8 }}>Pick all that apply — this helps us pace things kindly.</p>
+            <div className="ar-hint">في حاجة تانية شاغلاك؟</div>
             <div className="stack" style={{ gap: 10, marginTop: 22 }}>
               {LIFE_CONTEXT.map((opt) => (
                 <button key={opt} className={"choice" + (context.includes(opt) ? " selected" : "")} onClick={() => toggleContext(opt)}>
@@ -522,29 +583,140 @@ function Onboarding({ onDone, onSkip }) {
 /* =========================================================================
    UPLOAD MATERIALS
    ========================================================================= */
-function UploadMaterials({ onDone, onSkip }) {
+const UPLOAD_COLORS = ["#5B8DEF", "#14275A", "#1A56DB", "#3B74E8"];
+
+function UploadMaterials({ onDone, onSkip, isDesktop }) {
   const [files, setFiles] = useState({
     dsa: [{ name: "Lecture 4 – Graphs.pdf", size: "2.1 MB" }, { name: "Recitation notes.docx", size: "340 KB" }],
     calc: [{ name: "Series convergence slides.pdf", size: "1.8 MB" }],
     phys: [],
     eng: [{ name: "Essay rubric.pdf", size: "210 KB" }],
   });
-  const [busyCourse, setBusyCourse] = useState(null);
+  const [extraCourses, setExtraCourses] = useState([]);
+  const [addingCourse, setAddingCourse] = useState(false);
+  const [newCourseName, setNewCourseName] = useState("");
+  const allCourses = [...COURSES, ...extraCourses];
+  const [activeCourse, setActiveCourse] = useState(allCourses[0].id);
+  const [uploading, setUploading] = useState(null); // { courseId, name, size, progress }
   const fileNamesPool = ["Chapter scan.pdf", "Lecture recording notes.txt", "Slides – week 6.pptx", "Practice sheet.pdf", "Summary.docx"];
 
   function simulateUpload(courseId) {
-    setBusyCourse(courseId);
-    setTimeout(() => {
-      setFiles((f) => {
-        const pool = fileNamesPool[(f[courseId]?.length || 0) % fileNamesPool.length];
-        const size = (0.3 + Math.random() * 2.4).toFixed(1) + " MB";
-        return { ...f, [courseId]: [...(f[courseId] || []), { name: pool, size }] };
+    if (uploading) return;
+    const pool = fileNamesPool[(files[courseId]?.length || 0) % fileNamesPool.length];
+    const size = (0.3 + Math.random() * 2.4).toFixed(1) + " MB";
+    const entry = { courseId, name: pool, size, progress: 4 };
+    setUploading(entry);
+    const timer = setInterval(() => {
+      setUploading((u) => {
+        if (!u) { clearInterval(timer); return u; }
+        const next = Math.min(100, u.progress + 12 + Math.random() * 10);
+        if (next >= 100) {
+          clearInterval(timer);
+          setFiles((f) => ({ ...f, [courseId]: [...(f[courseId] || []), { name: u.name, size: u.size }] }));
+          return null;
+        }
+        return { ...u, progress: next };
       });
-      setBusyCourse(null);
-    }, 850);
+    }, 160);
+  }
+
+  function addCourse() {
+    const name = newCourseName.trim();
+    if (!name) return;
+    const id = "custom-" + Date.now();
+    setExtraCourses((c) => [...c, { id, name, code: "Added course", color: UPLOAD_COLORS[c.length % UPLOAD_COLORS.length] }]);
+    setFiles((f) => ({ ...f, [id]: [] }));
+    setActiveCourse(id);
+    setNewCourseName("");
+    setAddingCourse(false);
   }
 
   const totalFiles = Object.values(files).reduce((a, l) => a + l.length, 0);
+  const course = allCourses.find((c) => c.id === activeCourse) || allCourses[0];
+  const courseFiles = files[course.id] || [];
+  const isUploadingHere = uploading && uploading.courseId === course.id;
+
+  const dropZone = (
+    <button className="drop-zone" onClick={() => simulateUpload(course.id)} disabled={!!uploading}>
+      <div className="drop-icon"><IconUpload /></div>
+      <div style={{ fontWeight: 700, fontSize: 14.5 }}>Drag files here, or tap to upload</div>
+      <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>Slides, notes, recordings — PDF, PPTX, MP3</div>
+      <div className="ar-hint">اسحب ملفاتك أو دوس هنا عشان ترفعها</div>
+    </button>
+  );
+
+  const fileList = (
+    <div className="stack" style={{ gap: 8, marginTop: 14 }}>
+      <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 700 }}>{course.name} · {courseFiles.length} file{courseFiles.length === 1 ? "" : "s"}</div>
+      {courseFiles.map((f, i) => (
+        <div key={i} className="row between fade-item" style={{ padding: "10px 2px", borderBottom: "1px solid var(--line)" }}>
+          <div className="row" style={{ gap: 8, minWidth: 0 }}>
+            <IconFile style={{ color: "var(--blue)", flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{f.name}</div>
+              <div style={{ fontSize: 11, color: "var(--ink-faint)", fontWeight: 700 }}>{f.size} · Ready</div>
+            </div>
+          </div>
+          <IconCheck className="file-status-ready" />
+        </div>
+      ))}
+      {isUploadingHere && (
+        <div className="fade-item" style={{ padding: "10px 2px" }}>
+          <div className="row between">
+            <div className="row" style={{ gap: 8, minWidth: 0 }}>
+              <IconFile style={{ color: "var(--ink-faint)", flexShrink: 0 }} />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{uploading.name}</div>
+                <div style={{ fontSize: 11, color: "var(--ink-faint)", fontWeight: 700 }}>Uploading — {Math.round(uploading.progress)}%</div>
+              </div>
+            </div>
+          </div>
+          <div className="file-progress-track"><div className="file-progress-fill" style={{ width: uploading.progress + "%" }} /></div>
+        </div>
+      )}
+      {courseFiles.length === 0 && !isUploadingHere && (
+        <div style={{ fontSize: 12.5, color: "var(--ink-faint)", fontWeight: 600, padding: "6px 2px" }}>No materials yet</div>
+      )}
+    </div>
+  );
+
+  if (isDesktop) {
+    return (
+      <div className="screen">
+        <div className="px" style={{ paddingTop: 4, flexShrink: 0 }}>
+          <h1 style={{ fontSize: 25 }}>Upload materials</h1>
+          <div className="ar-hint" style={{ marginTop: -4 }}>اسحب ملفاتك أو دوس هنا عشان ترفعها</div>
+        </div>
+        <div className="px" style={{ marginTop: 20, display: "grid", gridTemplateColumns: "200px 1fr", gap: 24 }}>
+          <div className="stack" style={{ gap: 2 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--ink-faint)", padding: "0 12px 6px" }}>COURSES</div>
+            {allCourses.map((c) => (
+              <button key={c.id} className={"course-list-item" + (activeCourse === c.id ? " active" : "")} onClick={() => setActiveCourse(c.id)}>
+                {c.name}
+              </button>
+            ))}
+            {addingCourse ? (
+              <div className="row" style={{ gap: 6, padding: "8px 10px" }}>
+                <input type="text" placeholder="Course name" value={newCourseName} onChange={(e) => setNewCourseName(e.target.value)} autoFocus style={{ fontSize: 13, padding: "8px 10px" }} />
+                <button className="btn btn-primary btn-sm" onClick={addCourse}>Add</button>
+              </div>
+            ) : (
+              <button className="course-list-item" style={{ color: "var(--blue)" }} onClick={() => setAddingCourse(true)}><IconPlus style={{ width: 14, height: 14 }} /> Add course</button>
+            )}
+          </div>
+          <div>
+            {dropZone}
+            {fileList}
+          </div>
+        </div>
+        <div className="px" style={{ paddingTop: 22, paddingBottom: 4 }}>
+          <button className="btn btn-primary" onClick={onDone} disabled={totalFiles === 0}>
+            Continue with {totalFiles} file{totalFiles === 1 ? "" : "s"} <IconChevron style={{ color: "#fff" }} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="screen">
@@ -554,38 +726,21 @@ function UploadMaterials({ onDone, onSkip }) {
         <p className="section-sub" style={{ marginTop: 6 }}>Slides, notes or recordings — Glow builds your questions straight from these.</p>
       </div>
       <div className="scroll px" style={{ marginTop: 18 }}>
-        <div className="stack" style={{ gap: 14, paddingBottom: 8 }}>
-          {COURSES.map((c) => (
-            <div key={c.id} className="card" style={{ padding: 16 }}>
-              <div className="row between">
-                <div className="row" style={{ gap: 10 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: 4, background: c.color }} />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 15 }}>{c.name}</div>
-                    <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>{c.code}</div>
-                  </div>
-                </div>
-                <button className="btn btn-ghost btn-sm" onClick={() => simulateUpload(c.id)} disabled={busyCourse === c.id}>
-                  {busyCourse === c.id ? "Adding…" : <><IconPlus /> Add file</>}
-                </button>
-              </div>
-              {files[c.id] && files[c.id].length > 0 ? (
-                <div className="stack" style={{ gap: 8, marginTop: 12 }}>
-                  {files[c.id].map((f, i) => (
-                    <div key={i} className="row between fade-item" style={{ background: "var(--blue-pale)", borderRadius: 12, padding: "9px 12px" }}>
-                      <div className="row" style={{ gap: 8, minWidth: 0 }}>
-                        <IconFile style={{ color: "var(--blue)", flexShrink: 0 }} />
-                        <span style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{f.name}</span>
-                      </div>
-                      <span style={{ fontSize: 11, color: "var(--ink-faint)", fontWeight: 700, flexShrink: 0, marginLeft: 8 }}>{f.size}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ marginTop: 12, fontSize: 12.5, color: "var(--ink-faint)", fontWeight: 600 }}>No materials yet</div>
-              )}
-            </div>
+        <div className="row" style={{ gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+          {allCourses.map((c) => (
+            <button key={c.id} className={"course-tab" + (activeCourse === c.id ? " active" : "")} onClick={() => setActiveCourse(c.id)}>
+              {c.name}
+            </button>
           ))}
+          {addingCourse ? (
+            <input type="text" placeholder="Course name" value={newCourseName} onChange={(e) => setNewCourseName(e.target.value)} onBlur={addCourse} onKeyDown={(e) => e.key === "Enter" && addCourse()} autoFocus style={{ fontSize: 13, padding: "6px 10px", width: 130, flexShrink: 0 }} />
+          ) : (
+            <button className="course-tab" onClick={() => setAddingCourse(true)}><IconPlus style={{ width: 12, height: 12 }} /> Add course</button>
+          )}
+        </div>
+        <div style={{ marginTop: 16 }}>
+          {dropZone}
+          {fileList}
         </div>
       </div>
       <div className="px row between" style={{ paddingBottom: 26, paddingTop: 14, flexShrink: 0, gap: 10 }}>
@@ -614,8 +769,13 @@ function Prioritization({ onDone }) {
       <div className="scroll px" style={{ marginTop: 10 }}>
         {step === 0 && (
           <div className="fade-item">
-            <Glow size={64} mood="calm" />
-            <h1 style={{ fontSize: 24, marginTop: 14, lineHeight: 1.2 }}>When you sit down to study, what usually decides what you tackle first?</h1>
+            <div className="row" style={{ gap: 12, alignItems: "flex-start" }}>
+              <div className="chat-avatar"><Glow size={30} mood="calm" /></div>
+              <div className="card chat-bubble">
+                <h1 style={{ fontSize: 20, lineHeight: 1.25 }}>When you sit down to study, what usually decides what you tackle first?</h1>
+                <div className="ar-hint">إيه اللي حاسس إنه أهم دلوقتي؟</div>
+              </div>
+            </div>
             <div className="stack" style={{ gap: 10, marginTop: 20 }}>
               {PRIORITIES.map((p) => (
                 <button key={p.id} className={"choice" + (choice === p.id ? " selected" : "")} onClick={() => setChoice(p.id)} style={{ alignItems: "flex-start" }}>
@@ -633,6 +793,7 @@ function Prioritization({ onDone }) {
           <div className="fade-item">
             <h1 style={{ fontSize: 24, lineHeight: 1.2 }}>Right now, which topic worries you the most?</h1>
             <p className="section-sub" style={{ marginTop: 8 }}>We'll make sure it shows up early in your plan.</p>
+            <div className="ar-hint">إيه اللي حاسس إنه أهم دلوقتي؟</div>
             <div className="stack" style={{ gap: 10, marginTop: 20 }}>
               {COURSES.flatMap((c) => c.topics.map((t) => ({ ...t, courseName: c.name, courseId: c.id }))).slice(0, 5).map((t) => (
                 <button key={t.id} className={"choice" + (urgentPick === t.id ? " selected" : "")} onClick={() => setUrgentPick(t.id)}>
@@ -663,80 +824,124 @@ function Prioritization({ onDone }) {
 /* =========================================================================
    HOME / DASHBOARD
    ========================================================================= */
-function Home({ user, streak, plan, moodState, isDesktop, onOpenWellbeing, onStartSession, onOpenCourse, onOpenProfile }) {
+function ThisWeekWidget({ sessions, onOpenSchedule }) {
+  const upcoming = sessions.filter((s) => s.status !== "moved").slice(0, 3);
+  return (
+    <div className="week-widget">
+      <h3 className="section-title" style={{ fontSize: 15 }}>This week</h3>
+      <div className="ar-hint" style={{ marginBottom: 4 }}>جدولك الأسبوعي</div>
+      {upcoming.map((s) => {
+        const c = courseById(s.courseId);
+        return (
+          <div key={s.id} className="week-widget-row row" style={{ gap: 10 }}>
+            <div style={{ width: 5, height: 30, borderRadius: 3, background: c.color, flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: 13 }}>{s.topic}</div>
+              <div style={{ fontSize: 11.5, color: "var(--ink-faint)", fontWeight: 600 }}>
+                {WEEK_DAYS[s.day]} · {s.time}{s.rescheduledNote ? ` · ${s.rescheduledNote}` : ""}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <button className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 12 }} onClick={onOpenSchedule}>View full schedule</button>
+    </div>
+  );
+}
+
+function Home({ user, streak, plan, moodState, isDesktop, sessions, onOpenWellbeing, onStartSession, onOpenCourse, onOpenSchedule, onOpenProfile }) {
   const overall = Math.round(COURSES.reduce((a, c) => a + c.progress, 0) / COURSES.length);
   const mood = MOODS.find((m) => m.id === moodState);
+
+  const body = (
+    <div style={{ minWidth: 0 }}>
+      <div style={{ marginTop: 4 }}>
+        <h1 style={{ fontSize: 24 }}>Hey {user.name} {"\u{1F44B}"}</h1>
+        <div className="ar-hint">مساء الخير، {user.name}</div>
+        <p className="section-sub" style={{ marginTop: 4 }}>
+          {mood ? mood.message : "How are you feeling about studying today?"}
+        </p>
+      </div>
+
+      {!moodState && (
+        <button className="card fade-item" onClick={onOpenWellbeing} style={{ marginTop: 16, padding: 14, width: "100%", textAlign: "left", border: "1.5px solid var(--blue-pale)" }}>
+          <div className="row between">
+            <div className="row" style={{ gap: 12 }}>
+              <Glow size={44} mood="calm" />
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14.5 }}>Quick check-in</div>
+                <div style={{ fontSize: 12.5, color: "var(--ink-soft)", fontWeight: 600 }}>How are you feeling today?</div>
+              </div>
+            </div>
+            <IconChevron style={{ color: "var(--ink-faint)" }} />
+          </div>
+        </button>
+      )}
+
+      <div className="row between" style={{ marginTop: 22 }}>
+        <h3 className="section-title" style={{ fontSize: 17 }}>Today's plan</h3>
+        <span className="chip">{plan.reduce((a, p) => a + p.minutes, 0)} min total</span>
+      </div>
+      <div className="ar-hint">خطتك النهارده</div>
+      <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12 }}>
+        {plan.map((item, i) => {
+          const c = courseById(item.courseId);
+          const t = topicById(item.courseId, item.topicId);
+          return (
+            <div key={i} className="card fade-item" style={{ padding: 14, width: "100%" }}>
+              <div className="row between">
+                <div className="row" style={{ gap: 12, minWidth: 0 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 12, background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Marhey", fontSize: 15 }}>
+                    {c.name[0]}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>{item.minutes} min · {item.reason}</div>
+                  </div>
+                </div>
+                <button className={"btn btn-sm " + (i === 0 ? "btn-primary" : "btn-outline")} style={{ flexShrink: 0 }} onClick={() => onStartSession(item.courseId, item.topicId)}>
+                  Start
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="row between" style={{ marginTop: 24 }}>
+        <h3 className="section-title" style={{ fontSize: 17 }}>Your courses</h3>
+        <button className="chip" style={{ border: "none" }} onClick={onOpenCourse}>See all</button>
+      </div>
+      <div className="ar-hint">كورساتك</div>
+      <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12, marginBottom: 6 }}>
+        {COURSES.map((c) => {
+          const rising = courseRising(c);
+          return (
+            <button key={c.id} className="card fade-item row" style={{ padding: 14, width: "100%", textAlign: "left", gap: 14 }} onClick={() => onOpenCourse(c.id)}>
+              <RingProgress value={c.progress} size={50} stroke={6} color={c.color} />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: 14.5 }}>{c.name}</div>
+                <div className={rising ? "trend-up" : "trend-down"}>
+                  {rising ? <IconTrendUp /> : <IconTrendDown />} {rising ? "rising" : "needs focus"}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <>
       <TopBar streak={streak} onAvatar={onOpenProfile} isDesktop={isDesktop} />
       <div className="scroll px" style={{ paddingBottom: 18 }}>
-        <div style={{ marginTop: 4 }}>
-          <h1 style={{ fontSize: 24 }}>Hey {user.name} {"\u{1F44B}"}</h1>
-          <p className="section-sub" style={{ marginTop: 4 }}>
-            {mood ? mood.message : "How are you feeling about studying today?"}
-          </p>
-        </div>
-
-        {!moodState && (
-          <button className="card fade-item" onClick={onOpenWellbeing} style={{ marginTop: 16, padding: 14, width: "100%", textAlign: "left", border: "1.5px solid var(--blue-pale)" }}>
-            <div className="row between">
-              <div className="row" style={{ gap: 12 }}>
-                <Glow size={44} mood="calm" />
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 14.5 }}>Quick check-in</div>
-                  <div style={{ fontSize: 12.5, color: "var(--ink-soft)", fontWeight: 600 }}>How are you feeling today?</div>
-                </div>
-              </div>
-              <IconChevron style={{ color: "var(--ink-faint)" }} />
-            </div>
-          </button>
-        )}
-
-        <div className="row between" style={{ marginTop: 22 }}>
-          <h3 className="section-title" style={{ fontSize: 17 }}>Today's plan</h3>
-          <span className="chip">{plan.reduce((a, p) => a + p.minutes, 0)} min total</span>
-        </div>
-        <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12 }}>
-          {plan.map((item, i) => {
-            const c = courseById(item.courseId);
-            const t = topicById(item.courseId, item.topicId);
-            return (
-              <button key={i} className="card fade-item" style={{ padding: 14, textAlign: "left", width: "100%" }} onClick={() => onStartSession(item.courseId, item.topicId)}>
-                <div className="row between">
-                  <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                    <div style={{ width: 38, height: 38, borderRadius: 12, background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Marhey", fontSize: 15 }}>
-                      {c.name[0]}
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-                      <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>{item.reason}</div>
-                    </div>
-                  </div>
-                  <div className="chip" style={{ flexShrink: 0 }}><IconClock />{item.minutes}m</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="row between" style={{ marginTop: 24 }}>
-          <h3 className="section-title" style={{ fontSize: 17 }}>Your courses</h3>
-          <span className="chip good">{overall}% overall</span>
-        </div>
-        <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10, marginTop: 12, marginBottom: 6 }}>
-          {COURSES.map((c) => (
-            <button key={c.id} className="card fade-item row between" style={{ padding: 14, width: "100%", textAlign: "left" }} onClick={() => onOpenCourse(c.id)}>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14.5 }}>{c.name}</div>
-                <div className="progress-track" style={{ marginTop: 8 }}>
-                  <div className="progress-fill" style={{ width: c.progress + "%", background: c.color }} />
-                </div>
-              </div>
-              <span style={{ marginLeft: 14, fontFamily: "Marhey", fontWeight: 700, color: c.color }}>{c.progress}%</span>
-            </button>
-          ))}
-        </div>
+        {isDesktop ? (
+          <div className="home-desktop-grid">
+            {body}
+            <ThisWeekWidget sessions={sessions} onOpenSchedule={onOpenSchedule} />
+          </div>
+        ) : body}
       </div>
     </>
   );
@@ -745,7 +950,7 @@ function Home({ user, streak, plan, moodState, isDesktop, onOpenWellbeing, onSta
 /* =========================================================================
    STUDY SESSION
    ========================================================================= */
-function StudySession({ courseId, topicId, onExit, onComplete }) {
+function StudySession({ courseId, topicId, isDesktop, onExit, onComplete }) {
   const course = courseById(courseId);
   const topic = topicById(courseId, topicId);
   const questions = QUESTION_BANK[topicId] || [];
@@ -755,6 +960,7 @@ function StudySession({ courseId, topicId, onExit, onComplete }) {
   const [revealed, setRevealed] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [moreDetail, setMoreDetail] = useState(false);
 
   const q = questions[qi];
   const progressPct = Math.round((qi / questions.length) * 100);
@@ -777,6 +983,7 @@ function StudySession({ courseId, topicId, onExit, onComplete }) {
     setSelected(null);
     setWritten("");
     setRevealed(false);
+    setMoreDetail(false);
   }
 
   if (finished) {
@@ -818,60 +1025,74 @@ function StudySession({ courseId, topicId, onExit, onComplete }) {
       </div>
 
       <div className="scroll px" style={{ marginTop: 18 }}>
-        <div className="fade-item" key={qi}>
-          <h2 style={{ fontSize: 19, lineHeight: 1.35, fontFamily: "Quicksand", fontWeight: 700 }}>{q.prompt}</h2>
+        <div className={isDesktop ? "row" : undefined} style={{ gap: 24, alignItems: "flex-start" }}>
+          <div className="fade-item" key={qi} style={{ flex: 1, minWidth: 0 }}>
+            <h2 style={{ fontSize: 19, lineHeight: 1.35, fontFamily: "Quicksand", fontWeight: 700 }}>{q.prompt}</h2>
 
-          {q.type === "mcq" ? (
-            <div className="stack" style={{ gap: 10, marginTop: 18 }}>
-              {q.choices.map((choice, i) => {
-                let state = "";
-                if (revealed) {
-                  if (i === q.correct) state = " selected";
-                  else if (i === selected) state = " wrong";
-                }
-                return (
-                  <button
-                    key={i}
-                    className={"choice" + (selected === i && !revealed ? " selected" : "")}
-                    style={revealed && i === q.correct ? { borderColor: "var(--good)", background: "rgba(26,157,108,0.1)" } : revealed && i === selected && i !== q.correct ? { borderColor: "var(--danger)", background: "rgba(214,69,69,0.08)" } : {}}
-                    onClick={() => !revealed && setSelected(i)}
-                    disabled={revealed}
-                  >
-                    <span className="box" style={revealed && i === q.correct ? { background: "var(--good)", borderColor: "var(--good)" } : revealed && i === selected && i !== q.correct ? { background: "var(--danger)", borderColor: "var(--danger)" } : {}}>
-                      {revealed && i === q.correct && <IconCheck style={{ color: "#fff" }} />}
-                      {revealed && i === selected && i !== q.correct && <IconClose style={{ color: "#fff" }} />}
-                    </span>
-                    {choice}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={{ marginTop: 18 }}>
-              <textarea placeholder="Type your answer…" value={written} onChange={(e) => setWritten(e.target.value)} disabled={revealed} rows={4} />
-            </div>
-          )}
-
-          {revealed && (
-            <div className="card fade-item" style={{ marginTop: 18, padding: 16, background: "var(--blue-pale)", border: "none" }}>
-              <div className="row" style={{ gap: 8, marginBottom: 6 }}>
-                <Glow size={26} />
-                <span style={{ fontWeight: 700, fontSize: 13, color: "var(--blue)" }}>Glow explains</span>
+            {q.type === "mcq" ? (
+              <div className="stack" style={{ gap: 10, marginTop: 18 }}>
+                {q.choices.map((choice, i) => {
+                  let state = "";
+                  if (revealed) {
+                    if (i === q.correct) state = " selected";
+                    else if (i === selected) state = " wrong";
+                  }
+                  return (
+                    <button
+                      key={i}
+                      className={"choice" + (selected === i && !revealed ? " selected" : "")}
+                      style={revealed && i === q.correct ? { borderColor: "var(--good)", background: "rgba(26,157,108,0.1)" } : revealed && i === selected && i !== q.correct ? { borderColor: "var(--danger)", background: "rgba(214,69,69,0.08)" } : {}}
+                      onClick={() => !revealed && setSelected(i)}
+                      disabled={revealed}
+                    >
+                      <span className="box" style={revealed && i === q.correct ? { background: "var(--good)", borderColor: "var(--good)" } : revealed && i === selected && i !== q.correct ? { background: "var(--danger)", borderColor: "var(--danger)" } : {}}>
+                        {revealed && i === q.correct && <IconCheck style={{ color: "#fff" }} />}
+                        {revealed && i === selected && i !== q.correct && <IconClose style={{ color: "#fff" }} />}
+                      </span>
+                      {choice}
+                    </button>
+                  );
+                })}
               </div>
-              <p style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--navy)" }}>{q.explain}</p>
+            ) : (
+              <div style={{ marginTop: 18 }}>
+                <textarea placeholder="Type your answer…" value={written} onChange={(e) => setWritten(e.target.value)} disabled={revealed} rows={4} />
+              </div>
+            )}
+
+            {revealed && (
+              <div className="card fade-item" style={{ marginTop: 18, padding: 16, background: "var(--blue-pale)", border: "none" }}>
+                <div className="row" style={{ gap: 8, marginBottom: 6 }}>
+                  <Glow size={26} />
+                  <span style={{ fontWeight: 700, fontSize: 13, color: "var(--blue)" }}>Let's break it down</span>
+                </div>
+                <p style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--navy)" }}>{q.explain}</p>
+                {moreDetail && (
+                  <p className="fade-item" style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--navy)", marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(20,39,90,0.12)" }}>
+                    Want to revisit this? It's covered in {q.source ? `${q.source.file} — slide ${q.source.slide}` : "your uploaded materials"} for {topic.name}.
+                  </p>
+                )}
+                <div className="row" style={{ gap: 10, marginTop: 14 }}>
+                  <button className="btn btn-primary btn-sm" onClick={nextQ}>Got it</button>
+                  {!moreDetail && <button className="btn btn-ghost btn-sm" onClick={() => setMoreDetail(true)}>More detail</button>}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {isDesktop && q.source && (
+            <div className="source-panel fade-item" style={{ width: 280, flexShrink: 0 }}>
+              <div className="source-label">From {q.source.file} — slide {q.source.slide}</div>
+              <div className="source-thumb" />
             </div>
           )}
         </div>
       </div>
 
       <div className="px" style={{ paddingBottom: 26, paddingTop: 14, flexShrink: 0 }}>
-        {!revealed ? (
+        {!revealed && (
           <button className="btn btn-primary btn-block" disabled={q.type === "mcq" ? selected === null : written.trim().length === 0} onClick={submit}>
             Check answer
-          </button>
-        ) : (
-          <button className="btn btn-primary btn-block" onClick={nextQ}>
-            {qi + 1 >= questions.length ? "Finish session" : "Next question"} <IconChevron style={{ color: "#fff" }} />
           </button>
         )}
       </div>
@@ -887,12 +1108,34 @@ function ProgressView({ streak, isDesktop, onOpenProfile, onStartSession }) {
   const allTopics = COURSES.flatMap((c) => c.topics.map((t) => ({ ...t, courseId: c.id, courseName: c.name, color: c.color })));
   const shown = courseFilter === "all" ? allTopics : allTopics.filter((t) => t.courseId === courseFilter);
   const risingCount = allTopics.filter((t) => t.trend[t.trend.length - 1] >= t.trend[0]).length;
+  const topCourse = COURSES.reduce((a, c) => (c.progress > a.progress ? c : a), COURSES[0]);
+  const topTrend = courseTrend(topCourse);
+  const topChangePct = topTrend[0] === 0 ? 0 : Math.round(((topTrend[topTrend.length - 1] - topTrend[0]) / topTrend[0]) * 100);
+  const topRising = topChangePct >= 0;
 
   return (
     <>
       <TopBar streak={streak} onAvatar={onOpenProfile} title="Progress" />
       <div className="scroll px">
-        <div className="row" style={{ gap: 14, marginTop: 4 }}>
+        <div className="ar-hint" style={{ marginTop: -2 }}>تقدمك في المواد</div>
+
+        <div className="card hero-chart-card fade-item" style={{ marginTop: 12 }}>
+          <div className="row between">
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16 }}>{topCourse.name}</div>
+              <div className={topRising ? "trend-up" : "trend-down"} style={{ marginTop: 4 }}>
+                {topRising ? <IconTrendUp /> : <IconTrendDown />} {topRising ? "up" : "down"} {Math.abs(topChangePct)}% this week — {topRising ? "trending well" : "needs focus"}
+              </div>
+            </div>
+            <div style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 24, color: topCourse.color }}>{topCourse.progress}%</div>
+          </div>
+          <div className="hero-chart-wrap">
+            <Sparkline data={topTrend} color={topCourse.color} width={560} height={100} />
+          </div>
+          <div className="hero-chart-dates"><span>6 weeks ago</span><span>Today</span></div>
+        </div>
+
+        <div className="row" style={{ gap: 14, marginTop: 20 }}>
           <RingProgress value={Math.round(allTopics.reduce((a, t) => a + t.mastery, 0) / allTopics.length)} size={78} label="MASTERY" />
           <div className="stack" style={{ gap: 6 }}>
             <span className="chip good"><IconChart /> {risingCount} of {allTopics.length} topics trending up</span>
@@ -934,13 +1177,41 @@ function ProgressView({ streak, isDesktop, onOpenProfile, onStartSession }) {
 /* =========================================================================
    SCHEDULE
    ========================================================================= */
-function Schedule({ streak, onOpenProfile, sessions, onReschedule }) {
+const DAY_NUMS = [22, 23, 24, 25, 26, 27, 28];
+
+function SessionCard({ s, onReschedule }) {
+  const c = courseById(s.courseId);
+  return (
+    <div className={"card" + (s.status === "moved" ? " session-moved" : "")} style={{ padding: 13 }}>
+      <div className="row between">
+        <div className="row" style={{ gap: 10, minWidth: 0 }}>
+          <div style={{ width: 6, height: 34, borderRadius: 4, background: c.color, flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div className="session-title" style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.topic}</div>
+            <div style={{ fontSize: 11.5, color: "var(--ink-faint)", fontWeight: 600 }}>
+              {s.status === "moved" ? `was ${s.time}` : `${c.code} · ${s.time}`}
+            </div>
+          </div>
+        </div>
+        {s.status === "done" && <span className="chip good" style={{ flexShrink: 0 }}><IconCheck />Done</span>}
+        {s.status === "upcoming" && <span className="chip muted" style={{ flexShrink: 0 }}><IconClock />{s.rescheduledNote || "Planned"}</span>}
+        {s.status === "missed" && <span className="chip warn" style={{ flexShrink: 0 }}>Missed</span>}
+      </div>
+      {s.status === "missed" && (
+        <button className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 10 }} onClick={() => onReschedule(s)}>
+          Reschedule it
+        </button>
+      )}
+    </div>
+  );
+}
+
+function Schedule({ streak, isDesktop, onOpenProfile, sessions, onReschedule }) {
   const [note, setNote] = useState(null);
   const todayIdx = 2; // fixed "today" (Wed) for a believable demo snapshot
 
   function reschedule(s) {
     onReschedule(s.id);
-    const c = courseById(s.courseId);
     setNote(`Moved "${s.topic}" to ${WEEK_DAYS[(s.day + 1) % 7]} — same time, no penalty.`);
     setTimeout(() => setNote(null), 3400);
   }
@@ -950,6 +1221,16 @@ function Schedule({ streak, onOpenProfile, sessions, onReschedule }) {
       <TopBar streak={streak} onAvatar={onOpenProfile} title="Schedule" />
       <div className="scroll px" style={{ paddingBottom: 10 }}>
         <p className="section-sub" style={{ marginTop: 2 }}>Miss a session and we reshape the week around it — nothing lost, just moved.</p>
+        <div className="ar-hint">جدولك الأسبوعي</div>
+
+        <div className="day-strip">
+          {WEEK_DAYS.map((day, di) => (
+            <div key={di} className={"day-strip-cell" + (di === todayIdx ? " today" : "")}>
+              {day.slice(0, 1)}
+              <span className="day-num">{DAY_NUMS[di]}</span>
+            </div>
+          ))}
+        </div>
 
         {note && (
           <div className="card fade-item" style={{ marginTop: 14, padding: "12px 14px", background: "var(--blue-pale)", border: "none" }}>
@@ -960,46 +1241,41 @@ function Schedule({ streak, onOpenProfile, sessions, onReschedule }) {
           </div>
         )}
 
-        <div className="stack" style={{ gap: 16, marginTop: 16, marginBottom: 8 }}>
-          {WEEK_DAYS.map((day, di) => {
-            const items = sessions.filter((s) => s.day === di).sort((a, b) => a.time.localeCompare(b.time));
-            if (items.length === 0) return null;
-            return (
-              <div key={di}>
-                <div className="row" style={{ gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 14 }}>{day}</span>
-                  {di === todayIdx && <span className="chip" style={{ fontSize: 10 }}>TODAY</span>}
+        {isDesktop ? (
+          <div className="schedule-grid">
+            {WEEK_DAYS.map((day, di) => {
+              const items = sessions.filter((s) => s.day === di).sort((a, b) => a.time.localeCompare(b.time));
+              return (
+                <div key={di} className={"schedule-col" + (di === todayIdx ? " today" : "")}>
+                  <div className="schedule-col-head">{day}<span className="day-num">{DAY_NUMS[di]}</span></div>
+                  <div className="stack" style={{ gap: 8, marginTop: 8 }}>
+                    {items.map((s) => <SessionCard key={s.id} s={s} onReschedule={reschedule} />)}
+                  </div>
                 </div>
-                <div className="stack" style={{ gap: 8 }}>
-                  {items.map((s) => {
-                    const c = courseById(s.courseId);
-                    return (
-                      <div key={s.id} className="card" style={{ padding: 13 }}>
-                        <div className="row between">
-                          <div className="row" style={{ gap: 10, minWidth: 0 }}>
-                            <div style={{ width: 6, height: 34, borderRadius: 4, background: c.color, flexShrink: 0 }} />
-                            <div style={{ minWidth: 0 }}>
-                              <div style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.topic}</div>
-                              <div style={{ fontSize: 11.5, color: "var(--ink-faint)", fontWeight: 600 }}>{c.code} · {s.time}</div>
-                            </div>
-                          </div>
-                          {s.status === "done" && <span className="chip good" style={{ flexShrink: 0 }}><IconCheck />Done</span>}
-                          {s.status === "upcoming" && <span className="chip muted" style={{ flexShrink: 0 }}><IconClock />Planned</span>}
-                          {s.status === "missed" && <span className="chip warn" style={{ flexShrink: 0 }}>Missed</span>}
-                        </div>
-                        {s.status === "missed" && (
-                          <button className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 10 }} onClick={() => reschedule(s)}>
-                            Reschedule it
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
+              );
+            })}
+          </div>
+        ) : (
+          <div className="stack" style={{ gap: 16, marginTop: 16, marginBottom: 8 }}>
+            {WEEK_DAYS.map((day, di) => {
+              const items = sessions.filter((s) => s.day === di).sort((a, b) => a.time.localeCompare(b.time));
+              if (items.length === 0) return null;
+              return (
+                <div key={di}>
+                  <div className="row" style={{ gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 14 }}>{day}</span>
+                    {di === todayIdx && <span className="chip" style={{ fontSize: 10 }}>TODAY</span>}
+                  </div>
+                  <div className="stack" style={{ gap: 8 }}>
+                    {items.map((s) => <SessionCard key={s.id} s={s} onReschedule={reschedule} />)}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
+
+        <button className="btn btn-outline btn-block" style={{ marginTop: 16, marginBottom: 8 }}>+ Add a session</button>
       </div>
     </>
   );
@@ -1008,8 +1284,40 @@ function Schedule({ streak, onOpenProfile, sessions, onReschedule }) {
 /* =========================================================================
    WELLBEING CHECK-IN (modal)
    ========================================================================= */
-function WellbeingCheckin({ onClose, onSelect }) {
+function WellbeingCheckin({ onClose, onSelect, getPreviewPlan }) {
   const [picked, setPicked] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+
+  if (confirming) {
+    const mood = MOODS.find((m) => m.id === picked);
+    const preview = getPreviewPlan(picked);
+    const isLight = picked === "tired" || picked === "stressed";
+    return (
+      <SheetModal onClose={onClose}>
+        <div className="px" style={{ paddingTop: 6, paddingBottom: 28, textAlign: "center" }}>
+          <button className="avatar-btn" style={{ width: 34, height: 34, background: "var(--blue-pale)", color: "var(--navy)", marginLeft: "auto" }} onClick={onClose}><IconClose /></button>
+          <MoodFace mood={picked} size={64} style={{ color: "var(--blue)", margin: "8px auto 0" }} />
+          <h2 style={{ fontSize: 20, marginTop: 14 }}>{isLight ? "Let's keep today light." : "Sounds good — let's get started."}</h2>
+          <p className="section-sub" style={{ marginTop: 6 }}>{mood.message}</p>
+          {preview[0] && (
+            <div className="card" style={{ marginTop: 18, padding: 14, textAlign: "left" }}>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>{topicById(preview[0].courseId, preview[0].topicId).name}</div>
+              <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 2 }}>{preview[0].minutes} min · {isLight ? "lighter pace" : "full session"}</div>
+            </div>
+          )}
+          <button className="btn btn-primary btn-block" style={{ marginTop: 20 }} onClick={() => onSelect(picked, false)}>
+            Start {isLight ? "light" : "full"} session
+          </button>
+          {isLight && (
+            <button className="btn btn-ghost btn-block" style={{ marginTop: 10 }} onClick={() => onSelect(picked, true)}>
+              I'd rather do the full session
+            </button>
+          )}
+        </div>
+      </SheetModal>
+    );
+  }
+
   return (
     <SheetModal onClose={onClose}>
       <div className="px" style={{ paddingTop: 6, paddingBottom: 28 }}>
@@ -1017,22 +1325,21 @@ function WellbeingCheckin({ onClose, onSelect }) {
           <span className="chip muted">Wellbeing check-in</span>
           <button className="avatar-btn" style={{ width: 34, height: 34, background: "var(--blue-pale)", color: "var(--navy)" }} onClick={onClose}><IconClose /></button>
         </div>
-        <div className="row" style={{ gap: 14, marginTop: 16 }}>
-          <Glow size={62} mood={picked === "tired" ? "tired" : picked === "stressed" ? "calm" : "happy"} />
-          <div>
-            <h2 style={{ fontSize: 19 }}>How are you feeling today?</h2>
-            <p className="section-sub" style={{ marginTop: 4 }}>No wrong answer — this just shapes today's intensity.</p>
-          </div>
+        <div style={{ marginTop: 16, textAlign: "center" }}>
+          <h2 style={{ fontSize: 19 }}>How are you feeling today?</h2>
+          <div className="ar-hint" style={{ textAlign: "center" }}>حاسس بإيه النهارده؟</div>
         </div>
-        <div className="row wrap" style={{ gap: 10, marginTop: 20 }}>
+        <div className="row" style={{ marginTop: 22 }}>
           {MOODS.map((m) => (
-            <button key={m.id} className={"choice" + (picked === m.id ? " selected" : "")} style={{ width: "calc(50% - 5px)" }} onClick={() => setPicked(m.id)}>
-              <span className="box">{picked === m.id && <IconCheck style={{ color: "#fff" }} />}</span>
-              {m.label}
+            <button key={m.id} className={"mood-face-btn" + (picked === m.id ? " selected" : "")} onClick={() => setPicked(m.id)}>
+              <div className="mood-face" style={{ color: picked === m.id ? "var(--blue)" : "var(--ink-faint)" }}>
+                <MoodFace mood={m.id} />
+              </div>
+              <span className="mood-label">{m.label}</span>
             </button>
           ))}
         </div>
-        <button className="btn btn-primary btn-block" style={{ marginTop: 20 }} disabled={!picked} onClick={() => onSelect(picked)}>
+        <button className="btn btn-primary btn-block" style={{ marginTop: 24 }} disabled={!picked} onClick={() => setConfirming(true)}>
           Share with Glow
         </button>
       </div>
@@ -1066,7 +1373,8 @@ function Pricing({ onBack, currentPlan, onSubscribe }) {
     <div className="screen">
       <ScreenHeader onBack={onBack} title="Choose your plan" />
       <div className="scroll px" style={{ marginTop: 8 }}>
-        <p className="section-sub">Most students study one semester at a time — that's why Per Semester is our recommended cadence.</p>
+        <p className="section-sub">Pick what works for your semester.</p>
+        <div className="ar-hint">اختار الخطة اللي تناسبك</div>
         <div className="stack" style={{ gap: 12, marginTop: 18, marginBottom: 8 }}>
           {PLANS.map((p) => (
             <button
@@ -1091,9 +1399,15 @@ function Pricing({ onBack, currentPlan, onSubscribe }) {
                   <div style={{ fontSize: 11, color: "var(--ink-faint)", fontWeight: 700 }}>{p.cadence}</div>
                 </div>
               </div>
+              <ul className="plan-features">
+                {p.features.map((f) => (
+                  <li key={f}><IconCheck />{f}</li>
+                ))}
+              </ul>
             </button>
           ))}
         </div>
+        <p className="section-sub" style={{ textAlign: "center", marginBottom: 12 }}>Cancel anytime. Prices shown are placeholders.</p>
       </div>
       <div className="px" style={{ paddingBottom: 26, paddingTop: 14, flexShrink: 0 }}>
         <button className="btn btn-primary btn-block" onClick={() => { onSubscribe(selected); setConfirmed(selected); }}>
@@ -1107,7 +1421,9 @@ function Pricing({ onBack, currentPlan, onSubscribe }) {
 /* =========================================================================
    PROFILE / SETTINGS
    ========================================================================= */
-function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnected, notifs, onToggleNotif, pacing, onSetPacing, onRestart, onExitToLanding }) {
+function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnected, notifs, onToggleNotif, pacing, onSetPacing, sessionLength, onSetSessionLength, onRestart, onExitToLanding }) {
+  const connectedCourses = COURSES.filter((c) => connected[c.id] !== false);
+  const disconnectedCourses = COURSES.filter((c) => connected[c.id] === false);
   return (
     <>
       <ScreenHeader onBack={onBack} title="Profile" />
@@ -1132,16 +1448,37 @@ function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnect
           </div>
         </div>
 
+        <h3 className="section-title" style={{ fontSize: 15, marginTop: 22 }}>Account</h3>
+        <div className="card" style={{ marginTop: 10, padding: "2px 14px" }}>
+          <div className="account-row">
+            <span className="account-row-label">Email</span>
+            <span className="row" style={{ gap: 6 }}>
+              <span className="account-row-value">{user.name.toLowerCase()}@example.com</span>
+              <IconChevron style={{ color: "var(--ink-faint)", width: 14, height: 14 }} />
+            </span>
+          </div>
+          <div className="account-row">
+            <span className="account-row-label">Password</span>
+            <span className="row" style={{ gap: 6 }}>
+              <span className="account-row-value">••••••••</span>
+              <IconChevron style={{ color: "var(--ink-faint)", width: 14, height: 14 }} />
+            </span>
+          </div>
+        </div>
+
         <h3 className="section-title" style={{ fontSize: 15, marginTop: 22 }}>Connected courses</h3>
-        <div className="stack" style={{ gap: 8, marginTop: 10 }}>
-          {COURSES.map((c) => (
-            <div key={c.id} className="card row between" style={{ padding: "12px 14px" }}>
-              <div className="row" style={{ gap: 10 }}>
-                <div style={{ width: 9, height: 9, borderRadius: 3, background: c.color }} />
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>{c.name}</span>
-              </div>
-              <Toggle on={connected[c.id] !== false} onClick={() => onToggleConnected(c.id)} />
+        <div className="ar-hint" style={{ marginBottom: 4 }}>كورساتك المتصلة</div>
+        <div className="row wrap" style={{ gap: 8, marginTop: 8 }}>
+          {connectedCourses.map((c) => (
+            <div key={c.id} className="course-chip">
+              {c.name}
+              <button onClick={() => onToggleConnected(c.id)}><IconClose style={{ width: 11, height: 11 }} /></button>
             </div>
+          ))}
+          {disconnectedCourses.map((c) => (
+            <button key={c.id} className="course-chip-add" onClick={() => onToggleConnected(c.id)}>
+              <IconPlus style={{ width: 12, height: 12 }} /> {c.name}
+            </button>
           ))}
         </div>
 
@@ -1151,6 +1488,7 @@ function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnect
             ["reminders", "Study reminders"],
             ["wellbeing", "Wellbeing check-ins"],
             ["summary", "Weekly summary email"],
+            ["streakAlerts", "Streak alerts"],
           ].map(([key, label]) => (
             <div key={key} className="card row between" style={{ padding: "12px 14px" }}>
               <span style={{ fontSize: 13.5, fontWeight: 600 }}>{label}</span>
@@ -1180,11 +1518,36 @@ function Profile({ user, onBack, plan, onOpenPricing, connected, onToggleConnect
           </div>
         </div>
 
+        <h3 className="section-title" style={{ fontSize: 15, marginTop: 22 }}>Session length</h3>
+        <p className="section-sub" style={{ marginTop: 2 }}>How long should a typical session run?</p>
+        <div className="card" style={{ marginTop: 10, padding: 14 }}>
+          <div className="row" style={{ gap: 6, background: "rgba(20,39,90,0.06)", borderRadius: 12, padding: 4 }}>
+            {["Short", "Standard", "Long"].map((p) => (
+              <button
+                key={p}
+                onClick={() => onSetSessionLength(p)}
+                className="btn-sm"
+                style={{
+                  flex: 1, border: "none", borderRadius: 9, padding: "9px 6px", fontWeight: 700, fontSize: 12.5,
+                  background: sessionLength === p ? "var(--card)" : "transparent",
+                  color: sessionLength === p ? "var(--blue)" : "var(--ink-faint)",
+                  boxShadow: sessionLength === p ? "0 3px 10px rgba(20,39,90,0.12)" : "none",
+                }}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <button className="btn btn-outline btn-block" style={{ marginTop: 26 }} onClick={onRestart}>
           Restart onboarding demo
         </button>
-        <button className="btn btn-ghost btn-block" style={{ marginTop: 10, marginBottom: 30 }} onClick={onExitToLanding}>
+        <button className="btn btn-ghost btn-block" style={{ marginTop: 10 }} onClick={onExitToLanding}>
           Back to homepage
+        </button>
+        <button style={{ display: "block", margin: "18px auto 30px", background: "none", border: "none", color: "var(--danger)", fontWeight: 700, fontSize: 14 }} onClick={onExitToLanding}>
+          Log out
         </button>
       </div>
     </>
@@ -1308,6 +1671,11 @@ function Landing({ onGetStarted, onPreview }) {
               <div className="pricing-name">{p.name}</div>
               <div className="pricing-price">EGP {p.price}<span>{p.cadence}</span></div>
               <div className="section-sub" style={{ marginTop: 8 }}>{p.note}</div>
+              <ul className="plan-features">
+                {p.features.map((f) => (
+                  <li key={f}><IconCheck />{f}</li>
+                ))}
+              </ul>
               <button className="btn btn-primary btn-block" style={{ marginTop: 18 }} onClick={onGetStarted}>Get started</button>
             </div>
           ))}
@@ -1425,8 +1793,9 @@ function App() {
   const [coins, setCoins] = useState(120);
   const [subscription, setSubscription] = useState(null);
   const [connected, setConnected] = useState({});
-  const [notifs, setNotifs] = useState({ reminders: true, wellbeing: true, summary: false });
+  const [notifs, setNotifs] = useState({ reminders: true, wellbeing: true, summary: false, streakAlerts: false });
   const [pacing, setPacing] = useState("Balanced");
+  const [sessionLength, setSessionLength] = useState("Standard");
   const isDesktop = useIsDesktop();
 
   function finishOnboarding(data) {
@@ -1441,14 +1810,20 @@ function App() {
   }
   function skipToApp() { setStage("app"); }
 
-  function handleMood(id) {
-    setMoodState(id);
-    setPlan(computePlan(id, priorityInfo));
+  function handleMood(id, overrideFull) {
+    const effective = overrideFull ? "okay" : id;
+    setMoodState(effective);
+    setPlan(computePlan(effective, priorityInfo));
     setShowWellbeing(false);
   }
 
   function handleReschedule(id) {
-    setSessions((list) => list.map((s) => (s.id === id ? { ...s, day: (s.day + 1) % 7, status: "upcoming" } : s)));
+    setSessions((list) => {
+      const s = list.find((x) => x.id === id);
+      if (!s) return list;
+      const moved = { ...s, id: s.id + "-r" + Date.now(), day: (s.day + 1) % 7, status: "upcoming", rescheduledNote: "rescheduled — still on track" };
+      return list.map((x) => (x.id === id ? { ...x, status: "moved" } : x)).concat(moved);
+    });
   }
 
   function handleSessionComplete(topicId, newMastery) {
@@ -1482,7 +1857,7 @@ function App() {
   }
 
   if (stage === "onboarding") return <PhoneFrame isDesktop={isDesktop}><Onboarding onDone={finishOnboarding} onSkip={skipToApp} /></PhoneFrame>;
-  if (stage === "uploads") return <PhoneFrame isDesktop={isDesktop}><UploadMaterials onDone={finishUploads} onSkip={finishUploads} /></PhoneFrame>;
+  if (stage === "uploads") return <PhoneFrame isDesktop={isDesktop}><UploadMaterials isDesktop={isDesktop} onDone={finishUploads} onSkip={finishUploads} /></PhoneFrame>;
   if (stage === "prioritize") return <PhoneFrame isDesktop={isDesktop}><Prioritization onDone={finishPrioritize} /></PhoneFrame>;
 
   let content;
@@ -1491,6 +1866,7 @@ function App() {
       <StudySession
         courseId={activeSession.courseId}
         topicId={activeSession.topicId}
+        isDesktop={isDesktop}
         onExit={() => setActiveSession(null)}
         onComplete={handleSessionComplete}
       />
@@ -1503,10 +1879,11 @@ function App() {
         <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
           {tab === "home" && (
             <Home
-              user={user} streak={coins} plan={plan} moodState={moodState} isDesktop={isDesktop}
+              user={user} streak={coins} plan={plan} moodState={moodState} isDesktop={isDesktop} sessions={sessions}
               onOpenWellbeing={() => setShowWellbeing(true)}
               onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })}
               onOpenCourse={() => navigate("progress")}
+              onOpenSchedule={() => navigate("schedule")}
               onOpenProfile={() => navigate("profile")}
             />
           )}
@@ -1517,14 +1894,15 @@ function App() {
             <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
           )}
           {tab === "schedule" && (
-            <Schedule streak={coins} onOpenProfile={() => navigate("profile")} sessions={sessions} onReschedule={handleReschedule} />
+            <Schedule streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} sessions={sessions} onReschedule={handleReschedule} />
           )}
           {tab === "profile" && (
             <Profile
               user={user} onBack={() => navigate("home")} plan={subscription} onOpenPricing={() => setShowPricing(true)}
               connected={connected} onToggleConnected={(id) => setConnected((c) => ({ ...c, [id]: c[id] === false ? true : false }))}
               notifs={notifs} onToggleNotif={(k) => setNotifs((n) => ({ ...n, [k]: !n[k] }))}
-              pacing={pacing} onSetPacing={setPacing} onRestart={restartDemo} onExitToLanding={backToLanding}
+              pacing={pacing} onSetPacing={setPacing} sessionLength={sessionLength} onSetSessionLength={setSessionLength}
+              onRestart={restartDemo} onExitToLanding={backToLanding}
             />
           )}
         </div>
@@ -1546,7 +1924,7 @@ function App() {
     return (
       <DesktopShell tab={tab} onNav={navigate} streak={coins} user={user}>
         {content}
-        {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} />}
+        {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} getPreviewPlan={(id) => computePlan(id, priorityInfo)} />}
       </DesktopShell>
     );
   }
@@ -1554,7 +1932,7 @@ function App() {
   return (
     <PhoneFrame>
       {content}
-      {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} />}
+      {showWellbeing && <WellbeingCheckin onClose={() => setShowWellbeing(false)} onSelect={handleMood} getPreviewPlan={(id) => computePlan(id, priorityInfo)} />}
     </PhoneFrame>
   );
 }

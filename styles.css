@@ -383,3 +383,124 @@ textarea{ resize:vertical; min-height:84px; }
   .hero-copy h1{ font-size:32px; }
   .how-steps{ grid-template-columns:1fr; }
 }
+
+.plan-features{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.plan-features li{ display:flex; align-items:flex-start; gap:8px; font-size:13px; font-weight:600; color:var(--ink-soft); }
+.plan-features svg{ flex-shrink:0; margin-top:2px; color:var(--good); }
+
+/* ============================================================
+   NEW FEATURES ported from the wireframes
+   ============================================================ */
+
+/* Bilingual hint captions (Arabic secondary line under English copy) */
+.ar-hint{
+  direction:rtl; text-align:right; color:var(--ink-faint); font-size:12px; font-weight:600;
+  margin-top:3px; font-family:'Quicksand', 'Tahoma', system-ui, sans-serif;
+}
+
+/* Chat-bubble intro (onboarding / prioritization) */
+.chat-avatar{
+  width:44px; height:44px; border-radius:50%; background:var(--blue-pale);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;
+}
+.chat-bubble{ padding:16px 18px; flex:1; }
+
+/* Upload drop zone */
+.drop-zone{
+  border:1.6px dashed var(--line); border-radius:var(--radius-md); padding:28px 16px;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px;
+  background:rgba(20,39,90,0.02); width:100%;
+}
+.drop-zone:hover{ border-color:var(--blue-tint); background:var(--blue-pale); }
+.drop-zone .drop-icon{
+  width:40px; height:40px; border-radius:12px; background:var(--blue-pale); color:var(--blue);
+  display:flex; align-items:center; justify-content:center; margin-bottom:4px;
+}
+.file-status-ready{ color:var(--good); flex-shrink:0; }
+.file-progress-track{ height:5px; border-radius:99px; background:rgba(20,39,90,0.1); overflow:hidden; margin-top:6px; }
+.file-progress-fill{ height:100%; background:var(--blue); border-radius:99px; transition:width .15s linear; }
+.course-tab{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:999px;
+  font-size:13px; font-weight:700; background:var(--blue-pale); color:var(--navy); border:1.5px solid transparent;
+  white-space:nowrap;
+}
+.course-tab.active{ border-color:var(--blue); background:#fff; color:var(--blue); }
+.course-list-item{
+  display:flex; align-items:center; gap:8px; padding:11px 12px; border-radius:12px; width:100%; text-align:left;
+  font-size:13.5px; font-weight:700; color:var(--ink-soft); border:none; background:none;
+}
+.course-list-item.active{ background:var(--blue-pale); color:var(--blue); }
+
+/* Wellbeing mood faces */
+.mood-face-btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; flex:1;
+}
+.mood-face{
+  width:56px; height:56px; border-radius:50%; border:2px solid var(--line); display:flex; align-items:center; justify-content:center;
+  transition:border-color .12s ease, background .12s ease;
+}
+.mood-face-btn.selected .mood-face{ border-color:var(--blue); background:var(--blue-pale); }
+.mood-face-btn .mood-label{ font-size:12px; font-weight:700; color:var(--ink-faint); }
+.mood-face-btn.selected .mood-label{ color:var(--blue); }
+
+/* Home: "this week" desktop widget + course trend row */
+.home-desktop-grid{ display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start; }
+.trend-up{ color:var(--good); font-size:12px; font-weight:700; }
+.trend-down{ color:var(--warn); font-size:12px; font-weight:700; }
+.week-widget{ background:var(--card); border-radius:var(--radius-md); box-shadow:var(--shadow-card); padding:18px; }
+.week-widget-row{ padding:10px 0; border-bottom:1px solid var(--line); }
+.week-widget-row:last-of-type{ border-bottom:none; }
+
+/* Study session: source-material citation panel */
+.source-panel{ background:var(--card); border-radius:var(--radius-md); box-shadow:var(--shadow-card); padding:16px; }
+.source-panel .source-label{ font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--ink-faint); text-transform:uppercase; }
+.source-thumb{ margin-top:10px; height:120px; border-radius:12px; background:repeating-linear-gradient(135deg, rgba(20,39,90,0.05) 0 10px, rgba(20,39,90,0.02) 10px 20px); border:1px solid var(--line); }
+
+/* Progress: hero trend chart card */
+.hero-chart-card{ padding:20px; }
+.hero-chart-wrap{ margin-top:14px; width:100%; }
+.hero-chart-wrap svg{ width:100%; height:auto; display:block; }
+.hero-chart-dates{ display:flex; justify-content:space-between; margin-top:8px; font-size:11.5px; font-weight:700; color:var(--ink-faint); }
+
+/* Schedule: day strip + desktop grid */
+.day-strip{ display:flex; gap:6px; margin-top:14px; }
+.day-strip-cell{
+  flex:1; text-align:center; padding:8px 2px; border-radius:12px; font-size:11px; font-weight:700; color:var(--ink-faint);
+}
+.day-strip-cell .day-num{ display:block; font-family:'Marhey'; font-size:14px; color:var(--navy); margin-top:2px; }
+.day-strip-cell.today{ background:var(--blue); color:#fff; }
+.day-strip-cell.today .day-num{ color:#fff; }
+.session-moved{ opacity:.6; }
+.session-moved .session-title{ text-decoration:line-through; }
+.schedule-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:12px; margin-top:16px; align-items:start; }
+.schedule-col{ min-height:60px; }
+.schedule-col-head{ text-align:center; padding:8px 4px; border-radius:12px 12px 0 0; font-size:11.5px; font-weight:700; color:var(--ink-faint); }
+.schedule-col-head .day-num{ display:block; font-family:'Marhey'; font-size:15px; color:var(--navy); }
+.schedule-col.today .schedule-col-head{ background:rgba(26,86,219,0.08); color:var(--blue); }
+.schedule-col.today .schedule-col-head .day-num{ color:var(--blue); }
+
+/* Profile: account rows + removable course chips */
+.account-row{
+  display:flex; align-items:center; justify-content:space-between; padding:13px 2px; border-bottom:1px solid var(--line);
+  width:100%; background:none; border-left:none; border-right:none; border-top:none; text-align:left;
+}
+.account-row:last-child{ border-bottom:none; }
+.account-row-label{ font-size:13.5px; font-weight:600; color:var(--navy); }
+.account-row-value{ font-size:12.5px; font-weight:600; color:var(--ink-faint); }
+.course-chip{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 8px 8px 14px; border-radius:999px;
+  background:var(--blue-pale); color:var(--navy); font-size:13px; font-weight:700; border:none;
+}
+.course-chip button{
+  width:20px; height:20px; border-radius:50%; background:rgba(20,39,90,0.12); border:none; color:var(--navy);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.course-chip-add{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:999px;
+  background:none; border:1.5px dashed var(--line); color:var(--ink-soft); font-size:13px; font-weight:700;
+}
+
+@media (max-width:900px){
+  .home-desktop-grid{ grid-template-columns:1fr; }
+  .schedule-grid{ grid-template-columns:1fr; }
+}
