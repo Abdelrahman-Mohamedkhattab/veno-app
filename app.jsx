@@ -1717,24 +1717,54 @@ function computePlan(moodState, priorityInfo) {
   return plan;
 }
 
-function StudyPicker({ streak, onOpenProfile, onStartSession }) {
+const NEW_LECTURE_POOL = ["Lecture 6 – New material.pdf", "Guest lecture recording.mp3", "Week 8 slides.pptx", "Extra credit handout.docx", "Chapter 9 scan.pdf"];
+
+function StudyPicker({ streak, onOpenProfile, onStartSession, onAddMaterial }) {
+  const [uploadingCourse, setUploadingCourse] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  function addNewLecture(courseId) {
+    if (uploadingCourse) return;
+    setUploadingCourse(courseId);
+    setUploadProgress(6);
+    const timer = setInterval(() => {
+      setUploadProgress((p) => {
+        const next = p + 14 + Math.random() * 10;
+        if (next >= 100) {
+          clearInterval(timer);
+          const fileName = NEW_LECTURE_POOL[Math.floor(Math.random() * NEW_LECTURE_POOL.length)];
+          onAddMaterial(courseId, fileName);
+          setUploadingCourse(null);
+          return 0;
+        }
+        return next;
+      });
+    }, 150);
+  }
+
   return (
     <>
       <TopBar streak={streak} onAvatar={onOpenProfile} title="Study" />
       <div className="scroll px">
         <p className="section-sub" style={{ marginTop: 2 }}>Pick a topic and Glow will pull questions straight from your uploaded materials.</p>
+        <div className="ar-hint">اختار موضوع جديد أو كمل اللي بدأته</div>
         <div className="stack" style={{ gap: 16, marginTop: 16, marginBottom: 10 }}>
           {COURSES.map((c) => (
             <div key={c.id}>
-              <div className="row" style={{ gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 8, height: 8, borderRadius: 3, background: c.color }} />
-                <span style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 14.5 }}>{c.name}</span>
+              <div className="row between" style={{ marginBottom: 8 }}>
+                <div className="row" style={{ gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 3, background: c.color }} />
+                  <span style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 14.5 }}>{c.name}</span>
+                </div>
+                <button className="btn btn-ghost btn-sm" onClick={() => addNewLecture(c.id)} disabled={!!uploadingCourse}>
+                  {uploadingCourse === c.id ? `Adding… ${Math.round(uploadProgress)}%` : <><IconPlus style={{ width: 13, height: 13 }} /> New lecture</>}
+                </button>
               </div>
               <div className="stack" style={{ gap: 8 }}>
                 {c.topics.map((t) => (
                   <button key={t.id} className="card row between fade-item" style={{ padding: 13, width: "100%", textAlign: "left" }} onClick={() => onStartSession(c.id, t.id)}>
                     <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
-                    <span className="chip muted">{t.mastery}%</span>
+                    {t.isNew ? <span className="chip good">New</span> : <span className="chip muted">{t.mastery}%</span>}
                   </button>
                 ))}
               </div>
@@ -1796,6 +1826,7 @@ function App() {
   const [notifs, setNotifs] = useState({ reminders: true, wellbeing: true, summary: false, streakAlerts: false });
   const [pacing, setPacing] = useState("Balanced");
   const [sessionLength, setSessionLength] = useState("Standard");
+  const [dataVersion, setDataVersion] = useState(0);
   const isDesktop = useIsDesktop();
 
   function finishOnboarding(data) {
@@ -1828,10 +1859,31 @@ function App() {
 
   function handleSessionComplete(topicId, newMastery) {
     const t = COURSES.flatMap((c) => c.topics).find((t) => t.id === topicId);
-    if (t) { t.mastery = newMastery; t.trend = [...t.trend.slice(1), newMastery]; }
+    if (t) { t.mastery = newMastery; t.trend = [...t.trend.slice(1), newMastery]; t.isNew = false; }
     setCoins((c) => c + 25);
     setPlan((p) => p.filter((item) => item.topicId !== topicId));
     setActiveSession(null);
+  }
+
+  function handleAddMaterial(courseId, fileName) {
+    const course = courseById(courseId);
+    if (!course) return;
+    const id = "new-" + Date.now();
+    const name = fileName.replace(/\.[a-zA-Z0-9]+$/, "");
+    course.topics.push({ id, name, mastery: 0, trend: [0, 0, 0, 0, 0, 0], isNew: true });
+    QUESTION_BANK[id] = [
+      { type: "mcq",
+        prompt: `Glow just scanned "${fileName}". Which statement best describes what happens next?`,
+        choices: ["Nothing — the file is only stored", "Glow builds starter questions straight from it", "You must type your own questions", "The file replaces your other materials"],
+        correct: 1,
+        explain: `That's the whole idea behind uploading — Glow reads ${fileName} and turns it into practice questions like this one, instead of pulling from a generic bank.`,
+        source: { file: fileName, slide: 1 } },
+      { type: "written",
+        prompt: `In one sentence, what's the first thing you'd want to review from ${fileName}?`,
+        explain: "No wrong answer here — this just gives Glow a starting point for tailoring the next questions from this material.",
+        source: { file: fileName, slide: 1 } },
+    ];
+    setDataVersion((v) => v + 1);
   }
 
   function restartDemo() {
@@ -1888,7 +1940,7 @@ function App() {
             />
           )}
           {tab === "study" && (
-            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
+            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} onAddMaterial={handleAddMaterial} />
           )}
           {tab === "progress" && (
             <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
