@@ -165,6 +165,34 @@ const IconTrendDown = (p) => (
     <path d="M15 17h5v-5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+const IconPlay = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+  </svg>
+);
+const IconPause = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" {...p}>
+    <rect x="7" y="5.5" width="4" height="13" rx="1.2" fill="currentColor" />
+    <rect x="14" y="5.5" width="4" height="13" rx="1.2" fill="currentColor" />
+  </svg>
+);
+const IconDoc = (p) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M7 3.5h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M9 12h6M9 15.5h6M9 8.5h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+
+const PIPELINE_LABELS = { video: "Generating explainer video…", prioritizing: "Prioritizing key parts…", questions: "Building questions…" };
+const PIPELINE_PCT = { video: 30, prioritizing: 62, questions: 88 };
+
+function generateFocusAreas(name) {
+  return [
+    { label: `Core concepts in ${name}`, weight: "High" },
+    { label: "Worked examples & walkthroughs", weight: "Medium" },
+    { label: "Edge cases & common mistakes", weight: "Medium" },
+  ];
+}
 function MoodFace({ mood, size = 26, style }) {
   const mouths = {
     great: "M8 15.5c1.4 1.8 3.2 2.7 5 2.7s3.6-.9 5-2.7",
@@ -950,6 +978,47 @@ function Home({ user, streak, plan, moodState, isDesktop, sessions, onOpenWellbe
 /* =========================================================================
    STUDY SESSION
    ========================================================================= */
+function LecturePrep({ course, topic, onStartQuiz, onExit }) {
+  const [playing, setPlaying] = useState(false);
+  return (
+    <div className="screen">
+      <ScreenHeader onBack={onExit} title={topic.name} />
+      <div className="scroll px" style={{ marginTop: 10 }}>
+        <span className="chip good"><IconCheck /> Materials ready</span>
+
+        <h2 style={{ fontSize: 17, marginTop: 18 }}>Explainer video</h2>
+        <div className="card fade-item" style={{ marginTop: 10, padding: 0, overflow: "hidden" }}>
+          <div className="video-thumb">
+            <button className="video-play-btn" onClick={() => setPlaying((p) => !p)}>
+              {playing ? <IconPause /> : <IconPlay style={{ marginLeft: 2 }} />}
+            </button>
+          </div>
+          <div style={{ padding: 14 }}>
+            <div style={{ fontWeight: 700, fontSize: 14.5 }}>{topic.video.title}</div>
+            <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 2 }}>
+              {playing ? "Playing…" : topic.video.duration + " · generated from your upload"}
+            </div>
+          </div>
+        </div>
+
+        <h2 style={{ fontSize: 17, marginTop: 22 }}>Focus areas</h2>
+        <p className="section-sub" style={{ marginTop: 2 }}>Glow prioritized these parts of the lecture to get the most attention.</p>
+        <div className="stack" style={{ gap: 8, marginTop: 12, marginBottom: 6 }}>
+          {topic.focusAreas.map((f, i) => (
+            <div key={i} className="card row between focus-row fade-item">
+              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{f.label}</span>
+              <span className={"chip " + (f.weight === "High" ? "warn" : "muted")}>{f.weight} priority</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="px" style={{ paddingBottom: 26, paddingTop: 14, flexShrink: 0 }}>
+        <button className="btn btn-primary btn-block" onClick={onStartQuiz}>Start questions <IconChevron style={{ color: "#fff" }} /></button>
+      </div>
+    </div>
+  );
+}
+
 function StudySession({ courseId, topicId, isDesktop, onExit, onComplete }) {
   const course = courseById(courseId);
   const topic = topicById(courseId, topicId);
@@ -989,6 +1058,10 @@ function StudySession({ courseId, topicId, isDesktop, onExit, onComplete }) {
   if (finished) {
     const scorePct = Math.round((correctCount / questions.length) * 100);
     const newMastery = Math.min(100, topic.mastery + Math.round(scorePct / 12));
+    const isAiLecture = !!topic.video;
+    const gainPerSession = Math.max(3, Math.round(scorePct / 12));
+    const remaining = 100 - newMastery;
+    const repeatsNeeded = remaining <= 0 ? 0 : Math.max(1, Math.ceil(remaining / gainPerSession));
     return (
       <div className="screen">
         <div className="scroll px stack" style={{ alignItems: "center", textAlign: "center", paddingTop: 60, gap: 6 }}>
@@ -1005,9 +1078,38 @@ function StudySession({ courseId, topicId, isDesktop, onExit, onComplete }) {
             </div>
           </div>
           <div className="chip gold" style={{ marginTop: 16 }}><IconCoin /> +{questions.length * 5} coins earned</div>
+
+          {isAiLecture && (
+            <>
+              <div className="card fade-item" style={{ width: "100%", marginTop: 18, padding: 16, textAlign: "left" }}>
+                <div className="row" style={{ gap: 10 }}>
+                  <div className="feature-icon" style={{ marginBottom: 0, flexShrink: 0 }}><IconDoc /></div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>Revision material generated</div>
+                    <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 2 }}>Personalized notes for {topic.name} are ready for next time.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="card fade-item" style={{ width: "100%", marginTop: 10, padding: 16 }}>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>
+                  {repeatsNeeded === 0 ? "You've hit 100% mastery!" : `Glow estimates ${repeatsNeeded} more session${repeatsNeeded === 1 ? "" : "s"} to reach 100%`}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 4 }}>
+                  Based on this quiz's {scorePct}% score and your current pace.
+                </div>
+                {repeatsNeeded > 0 && (
+                  <div className="repeat-dots">
+                    {Array.from({ length: Math.min(repeatsNeeded, 8) }).map((_, i) => (
+                      <span key={i} className={"repeat-dot" + (i === 0 ? " on" : "")} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
         <div className="px" style={{ paddingBottom: 26, paddingTop: 14, flexShrink: 0 }}>
-          <button className="btn btn-primary btn-block" onClick={() => onComplete(topicId, newMastery)}>Back to plan</button>
+          <button className="btn btn-primary btn-block" onClick={() => onComplete(topicId, newMastery, scorePct)}>Back to plan</button>
         </div>
       </div>
     );
@@ -1761,12 +1863,25 @@ function StudyPicker({ streak, onOpenProfile, onStartSession, onAddMaterial }) {
                 </button>
               </div>
               <div className="stack" style={{ gap: 8 }}>
-                {c.topics.map((t) => (
-                  <button key={t.id} className="card row between fade-item" style={{ padding: 13, width: "100%", textAlign: "left" }} onClick={() => onStartSession(c.id, t.id)}>
-                    <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
-                    {t.isNew ? <span className="chip good">New</span> : <span className="chip muted">{t.mastery}%</span>}
-                  </button>
-                ))}
+                {c.topics.map((t) => {
+                  if (t.pipeline && t.pipeline !== "ready") {
+                    return (
+                      <div key={t.id} className="card fade-item pipeline-row">
+                        <div className="row between">
+                          <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
+                          <span className="chip muted">{PIPELINE_LABELS[t.pipeline]}</span>
+                        </div>
+                        <div className="progress-track"><div className="progress-fill" style={{ width: PIPELINE_PCT[t.pipeline] + "%" }} /></div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <button key={t.id} className="card row between fade-item" style={{ padding: 13, width: "100%", textAlign: "left" }} onClick={() => onStartSession(c.id, t.id)}>
+                      <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
+                      {t.isNew ? <span className="chip good">New</span> : <span className="chip muted">{t.mastery}%</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -1857,9 +1972,17 @@ function App() {
     });
   }
 
-  function handleSessionComplete(topicId, newMastery) {
+  function handleSessionComplete(topicId, newMastery, scorePct) {
     const t = COURSES.flatMap((c) => c.topics).find((t) => t.id === topicId);
-    if (t) { t.mastery = newMastery; t.trend = [...t.trend.slice(1), newMastery]; t.isNew = false; }
+    if (t) {
+      t.mastery = newMastery; t.trend = [...t.trend.slice(1), newMastery]; t.isNew = false;
+      if (t.video) {
+        t.revisionReady = true;
+        const gain = Math.max(3, Math.round((scorePct || 0) / 12));
+        const remaining = 100 - newMastery;
+        t.recommendedRepeats = remaining <= 0 ? 0 : Math.max(1, Math.ceil(remaining / gain));
+      }
+    }
     setCoins((c) => c + 25);
     setPlan((p) => p.filter((item) => item.topicId !== topicId));
     setActiveSession(null);
@@ -1870,20 +1993,38 @@ function App() {
     if (!course) return;
     const id = "new-" + Date.now();
     const name = fileName.replace(/\.[a-zA-Z0-9]+$/, "");
-    course.topics.push({ id, name, mastery: 0, trend: [0, 0, 0, 0, 0, 0], isNew: true });
-    QUESTION_BANK[id] = [
-      { type: "mcq",
-        prompt: `Glow just scanned "${fileName}". Which statement best describes what happens next?`,
-        choices: ["Nothing — the file is only stored", "Glow builds starter questions straight from it", "You must type your own questions", "The file replaces your other materials"],
-        correct: 1,
-        explain: `That's the whole idea behind uploading — Glow reads ${fileName} and turns it into practice questions like this one, instead of pulling from a generic bank.`,
-        source: { file: fileName, slide: 1 } },
-      { type: "written",
-        prompt: `In one sentence, what's the first thing you'd want to review from ${fileName}?`,
-        explain: "No wrong answer here — this just gives Glow a starting point for tailoring the next questions from this material.",
-        source: { file: fileName, slide: 1 } },
-    ];
+    const topic = { id, name, mastery: 0, trend: [0, 0, 0, 0, 0, 0], isNew: true, pipeline: "video", video: null, focusAreas: null, revisionReady: false, recommendedRepeats: null };
+    course.topics.push(topic);
     setDataVersion((v) => v + 1);
+
+    setTimeout(() => {
+      topic.video = { title: `Explainer: ${name}`, duration: `${3 + Math.floor(Math.random() * 4)} min` };
+      topic.pipeline = "prioritizing";
+      setDataVersion((v) => v + 1);
+    }, 1300);
+
+    setTimeout(() => {
+      topic.focusAreas = generateFocusAreas(name);
+      topic.pipeline = "questions";
+      setDataVersion((v) => v + 1);
+    }, 2600);
+
+    setTimeout(() => {
+      QUESTION_BANK[id] = [
+        { type: "mcq",
+          prompt: `Glow just scanned "${fileName}". Which statement best describes what happens next?`,
+          choices: ["Nothing — the file is only stored", "Glow builds starter questions straight from it", "You must type your own questions", "The file replaces your other materials"],
+          correct: 1,
+          explain: `That's the whole idea behind uploading — Glow reads ${fileName} and turns it into practice questions like this one, instead of pulling from a generic bank.`,
+          source: { file: fileName, slide: 1 } },
+        { type: "written",
+          prompt: `In one sentence, what's the first thing you'd want to review from ${fileName}?`,
+          explain: "No wrong answer here — this just gives Glow a starting point for tailoring the next questions from this material.",
+          source: { file: fileName, slide: 1 } },
+      ];
+      topic.pipeline = "ready";
+      setDataVersion((v) => v + 1);
+    }, 3800);
   }
 
   function restartDemo() {
@@ -1904,6 +2045,12 @@ function App() {
     setTab(tabId);
   }
 
+  function startSession(courseId, topicId) {
+    const topic = topicById(courseId, topicId);
+    const stage = topic && topic.video ? "prep" : "quiz";
+    setActiveSession({ courseId, topicId, stage });
+  }
+
   if (view === "landing") {
     return <Landing onGetStarted={enterApp} onPreview={previewDashboard} />;
   }
@@ -1913,7 +2060,18 @@ function App() {
   if (stage === "prioritize") return <PhoneFrame isDesktop={isDesktop}><Prioritization onDone={finishPrioritize} /></PhoneFrame>;
 
   let content;
-  if (activeSession) {
+  if (activeSession && activeSession.stage === "prep") {
+    const course = courseById(activeSession.courseId);
+    const topic = topicById(activeSession.courseId, activeSession.topicId);
+    content = (
+      <LecturePrep
+        course={course}
+        topic={topic}
+        onStartQuiz={() => setActiveSession({ ...activeSession, stage: "quiz" })}
+        onExit={() => setActiveSession(null)}
+      />
+    );
+  } else if (activeSession) {
     content = (
       <StudySession
         courseId={activeSession.courseId}
@@ -1933,17 +2091,17 @@ function App() {
             <Home
               user={user} streak={coins} plan={plan} moodState={moodState} isDesktop={isDesktop} sessions={sessions}
               onOpenWellbeing={() => setShowWellbeing(true)}
-              onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })}
+              onStartSession={startSession}
               onOpenCourse={() => navigate("progress")}
               onOpenSchedule={() => navigate("schedule")}
               onOpenProfile={() => navigate("profile")}
             />
           )}
           {tab === "study" && (
-            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} onAddMaterial={handleAddMaterial} />
+            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={startSession} onAddMaterial={handleAddMaterial} />
           )}
           {tab === "progress" && (
-            <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={(cid, tid) => setActiveSession({ courseId: cid, topicId: tid })} />
+            <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={startSession} />
           )}
           {tab === "schedule" && (
             <Schedule streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} sessions={sessions} onReschedule={handleReschedule} />

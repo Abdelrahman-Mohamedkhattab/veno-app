@@ -504,3 +504,24 @@ textarea{ resize:vertical; min-height:84px; }
   .home-desktop-grid{ grid-template-columns:1fr; }
   .schedule-grid{ grid-template-columns:1fr; }
 }
+
+/* ============================================================
+   Lecture AI pipeline — video, focus areas, revision + repeat estimate
+   ============================================================ */
+.video-thumb{
+  height:170px; position:relative; display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.14), transparent 55%),
+    linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+}
+.video-play-btn{
+  width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.92); border:none;
+  display:flex; align-items:center; justify-content:center; color:var(--blue); flex-shrink:0;
+  box-shadow:0 8px 20px rgba(11,27,62,0.35);
+}
+.pipeline-row{ padding:13px; }
+.pipeline-row .progress-track{ margin-top:8px; }
+.focus-row{ padding:12px 14px; }
+.repeat-dots{ display:flex; gap:6px; justify-content:center; margin-top:10px; }
+.repeat-dot{ width:9px; height:9px; border-radius:50%; background:var(--blue-pale); }
+.repeat-dot.on{ background:var(--blue); }
