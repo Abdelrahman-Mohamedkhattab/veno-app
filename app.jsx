@@ -1886,8 +1886,11 @@ function StudyPicker({ streak, isDesktop, onOpenProfile, onStartSession, onAddMa
                           {t.isNew ? (
                             <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 6 }}>New · ready to start</div>
                           ) : (
-                            <div className="progress-track" style={{ marginTop: 8 }}>
-                              <div className="progress-fill" style={{ width: t.mastery + "%", background: c.color }} />
+                            <div className="row" style={{ gap: 8, marginTop: 8 }}>
+                              <div className="progress-track" style={{ flex: 1 }}>
+                                <div className="progress-fill" style={{ width: t.mastery + "%", background: c.color }} />
+                              </div>
+                              <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--ink-faint)", flexShrink: 0 }}>{t.mastery}%</span>
                             </div>
                           )}
                         </div>
