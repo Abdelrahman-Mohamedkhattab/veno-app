@@ -1821,7 +1821,7 @@ function computePlan(moodState, priorityInfo) {
 
 const NEW_LECTURE_POOL = ["Lecture 6 – New material.pdf", "Guest lecture recording.mp3", "Week 8 slides.pptx", "Extra credit handout.docx", "Chapter 9 scan.pdf"];
 
-function StudyPicker({ streak, onOpenProfile, onStartSession, onAddMaterial }) {
+function StudyPicker({ streak, isDesktop, onOpenProfile, onStartSession, onAddMaterial }) {
   const [uploadingCourse, setUploadingCourse] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -1850,19 +1850,16 @@ function StudyPicker({ streak, onOpenProfile, onStartSession, onAddMaterial }) {
       <div className="scroll px">
         <p className="section-sub" style={{ marginTop: 2 }}>Pick a topic and Glow will pull questions straight from your uploaded materials.</p>
         <div className="ar-hint">اختار موضوع جديد أو كمل اللي بدأته</div>
-        <div className="stack" style={{ gap: 16, marginTop: 16, marginBottom: 10 }}>
+        <div className="stack" style={{ gap: 22, marginTop: 16, marginBottom: 10 }}>
           {COURSES.map((c) => (
             <div key={c.id}>
-              <div className="row between" style={{ marginBottom: 8 }}>
-                <div className="row" style={{ gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 3, background: c.color }} />
-                  <span style={{ fontFamily: "Marhey", fontWeight: 700, fontSize: 14.5 }}>{c.name}</span>
-                </div>
+              <div className="row between" style={{ marginBottom: 10 }}>
+                <h3 className="section-title" style={{ fontSize: 16.5 }}>{c.name}</h3>
                 <button className="btn btn-ghost btn-sm" onClick={() => addNewLecture(c.id)} disabled={!!uploadingCourse}>
                   {uploadingCourse === c.id ? `Adding… ${Math.round(uploadProgress)}%` : <><IconPlus style={{ width: 13, height: 13 }} /> New lecture</>}
                 </button>
               </div>
-              <div className="stack" style={{ gap: 8 }}>
+              <div className={"stack" + (isDesktop ? " grid-cards" : "")} style={{ gap: 10 }}>
                 {c.topics.map((t) => {
                   if (t.pipeline && t.pipeline !== "ready") {
                     return (
@@ -1876,10 +1873,20 @@ function StudyPicker({ streak, onOpenProfile, onStartSession, onAddMaterial }) {
                     );
                   }
                   return (
-                    <button key={t.id} className="card row between fade-item" style={{ padding: 13, width: "100%", textAlign: "left" }} onClick={() => onStartSession(c.id, t.id)}>
-                      <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
-                      {t.isNew ? <span className="chip good">New</span> : <span className="chip muted">{t.mastery}%</span>}
-                    </button>
+                    <div key={t.id} className="card fade-item" style={{ padding: 14 }}>
+                      <div className="row between">
+                        <div className="row" style={{ gap: 12, minWidth: 0 }}>
+                          <div style={{ width: 38, height: 38, borderRadius: 12, background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Marhey", fontSize: 15 }}>
+                            {t.name[0]}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
+                            <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>{t.isNew ? "New · ready to start" : `${t.mastery}% mastery`}</div>
+                          </div>
+                        </div>
+                        <button className="btn btn-outline btn-sm" style={{ flexShrink: 0 }} onClick={() => onStartSession(c.id, t.id)}>Start</button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -2098,7 +2105,7 @@ function App() {
             />
           )}
           {tab === "study" && (
-            <StudyPicker streak={coins} onOpenProfile={() => navigate("profile")} onStartSession={startSession} onAddMaterial={handleAddMaterial} />
+            <StudyPicker streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={startSession} onAddMaterial={handleAddMaterial} />
           )}
           {tab === "progress" && (
             <ProgressView streak={coins} isDesktop={isDesktop} onOpenProfile={() => navigate("profile")} onStartSession={startSession} />
