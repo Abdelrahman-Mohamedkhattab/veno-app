@@ -1874,17 +1874,23 @@ function StudyPicker({ streak, isDesktop, onOpenProfile, onStartSession, onAddMa
                   }
                   return (
                     <div key={t.id} className="card fade-item" style={{ padding: 14 }}>
-                      <div className="row between">
-                        <div className="row" style={{ gap: 12, minWidth: 0 }}>
-                          <div style={{ width: 38, height: 38, borderRadius: 12, background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Marhey", fontSize: 15 }}>
-                            {t.name[0]}
-                          </div>
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-                            <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600 }}>{t.isNew ? "New · ready to start" : `${t.mastery}% mastery`}</div>
-                          </div>
+                      <div className="row" style={{ gap: 12 }}>
+                        <div style={{ width: 38, height: 38, borderRadius: 12, background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Marhey", fontSize: 15 }}>
+                          {t.name[0]}
                         </div>
-                        <button className="btn btn-outline btn-sm" style={{ flexShrink: 0 }} onClick={() => onStartSession(c.id, t.id)}>Start</button>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div className="row between" style={{ gap: 10 }}>
+                            <span style={{ fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</span>
+                            <button className="btn btn-outline btn-sm" style={{ flexShrink: 0 }} onClick={() => onStartSession(c.id, t.id)}>Start</button>
+                          </div>
+                          {t.isNew ? (
+                            <div style={{ fontSize: 12, color: "var(--ink-faint)", fontWeight: 600, marginTop: 6 }}>New · ready to start</div>
+                          ) : (
+                            <div className="progress-track" style={{ marginTop: 8 }}>
+                              <div className="progress-fill" style={{ width: t.mastery + "%", background: c.color }} />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
